@@ -1,0 +1,2983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spring AOP Masterclass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --bg2: #13161e;
+  --bg3: #1a1e29;
+  --border: #252a38;
+  --accent: #4f9eff;
+  --accent2: #7c6cff;
+  --accent3: #38d9a9;
+  --accent4: #ff6b6b;
+  --accent5: #ffd43b;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --sidebar-w: 260px;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.75;display:flex;min-height:100vh}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;padding:20px 0 40px}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sidebar-logo h2{font-family:var(--font-head);font-size:14px;font-weight:800;color:var(--accent);letter-spacing:1px;text-transform:uppercase}
+.sidebar-logo p{font-size:11px;color:var(--text3);margin-top:3px}
+.sidebar-section{padding:6px 12px 2px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-top:8px}
+#sidebar a{display:block;padding:6px 20px;font-size:12.5px;color:var(--text2);text-decoration:none;border-left:2px solid transparent;transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sidebar a:hover{color:var(--text);background:var(--bg3);border-left-color:var(--accent2)}
+#sidebar a.active{color:var(--accent);border-left-color:var(--accent);background:rgba(79,158,255,.07)}
+
+/* MAIN CONTENT */
+#main{margin-left:var(--sidebar-w);flex:1;max-width:calc(100% - var(--sidebar-w));min-height:100vh}
+.content-wrap{max-width:860px;margin:0 auto;padding:60px 40px 120px}
+
+/* HERO */
+.hero{text-align:center;padding:80px 20px 60px;border-bottom:1px solid var(--border);margin-bottom:80px}
+.hero-badge{display:inline-block;background:rgba(79,158,255,.12);border:1px solid rgba(79,158,255,.3);color:var(--accent);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:24px}
+.hero h1{font-family:var(--font-head);font-size:56px;font-weight:800;line-height:1.1;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px}
+.hero p.sub{font-size:18px;color:var(--text2);max-width:600px;margin:0 auto 16px;line-height:1.6}
+.hero p.note{font-size:12px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);display:inline-block;padding:6px 16px;border-radius:6px}
+
+/* SECTION HEADINGS */
+.toc-section{margin-bottom:80px}
+h2.section-title{font-family:var(--font-head);font-size:32px;font-weight:800;color:#fff;margin-bottom:8px;padding-bottom:12px;border-bottom:2px solid var(--border);position:relative}
+h2.section-title::after{content:'';position:absolute;bottom:-2px;left:0;width:60px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+h2.section-title span.num{color:var(--accent2);font-size:14px;font-weight:600;display:block;margin-bottom:4px;font-family:var(--font-mono)}
+h3.sub-title{font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--accent);margin:36px 0 12px}
+h4.mini-title{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--accent3);margin:24px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+
+/* TEXT */
+p{color:var(--text2);margin-bottom:14px;line-height:1.8}
+p strong{color:var(--text);font-weight:600}
+ul,ol{color:var(--text2);padding-left:20px;margin-bottom:14px}
+li{margin-bottom:6px;line-height:1.7}
+li strong{color:var(--text)}
+
+/* CALLOUT BOXES */
+.callout{background:var(--bg3);border-left:3px solid var(--accent);padding:16px 20px;border-radius:0 8px 8px 0;margin:20px 0;font-size:14px}
+.callout.warn{border-left-color:var(--accent4)}
+.callout.success{border-left-color:var(--accent3)}
+.callout.note{border-left-color:var(--accent5)}
+.callout .callout-title{font-weight:700;font-family:var(--font-head);font-size:13px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;color:var(--accent)}
+.callout.warn .callout-title{color:var(--accent4)}
+.callout.success .callout-title{color:var(--accent3)}
+.callout.note .callout-title{color:var(--accent5)}
+
+/* CODE BLOCKS */
+.code-block{margin:20px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.code-label{background:var(--bg3);padding:8px 16px;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.code-label span.dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.code-block pre{margin:0!important;border-radius:0!important;font-size:13px!important;max-height:500px;overflow-y:auto}
+.code-block pre::-webkit-scrollbar{width:4px;height:4px}
+.code-block pre::-webkit-scrollbar-thumb{background:var(--border)}
+
+/* INLINE CODE */
+code:not([class]){background:rgba(79,158,255,.12);color:var(--accent);padding:2px 7px;border-radius:4px;font-family:var(--font-mono);font-size:13px}
+
+/* DIAGRAM */
+.diagram{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:24px;margin:24px 0;overflow-x:auto}
+.diagram-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;text-align:center}
+.flow-row{display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.flow-box{background:var(--bg);border:1px solid var(--border);padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text);font-family:var(--font-mono);text-align:center;min-width:120px}
+.flow-box.accent{border-color:var(--accent);color:var(--accent);background:rgba(79,158,255,.07)}
+.flow-box.accent2{border-color:var(--accent2);color:var(--accent2);background:rgba(124,108,255,.07)}
+.flow-box.accent3{border-color:var(--accent3);color:var(--accent3);background:rgba(56,217,169,.07)}
+.flow-box.accent4{border-color:var(--accent4);color:var(--accent4);background:rgba(255,107,107,.07)}
+.flow-arrow{color:var(--text3);font-size:20px;padding:0 8px;font-weight:300}
+.flow-down{text-align:center;color:var(--text3);font-size:18px;margin:4px 0}
+
+/* COMPARISON TABLE */
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px}
+thead th{background:var(--bg3);color:var(--text);font-family:var(--font-head);font-size:12px;text-transform:uppercase;letter-spacing:.5px;padding:12px 16px;text-align:left;border:1px solid var(--border)}
+tbody td{padding:11px 16px;border:1px solid var(--border);color:var(--text2);vertical-align:top}
+tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+tbody td code{font-family:var(--font-mono);font-size:12px;color:var(--accent);background:rgba(79,158,255,.1);padding:2px 6px;border-radius:3px}
+.check{color:var(--accent3);font-weight:700}
+.cross{color:var(--accent4);font-weight:700}
+
+/* INTERVIEW Q */
+.iq{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;margin:16px 0}
+.iq .q{font-weight:700;color:var(--text);font-family:var(--font-head);font-size:15px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.iq .q .badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.badge.beginner{background:rgba(56,217,169,.15);color:var(--accent3)}
+.badge.intermediate{background:rgba(79,158,255,.15);color:var(--accent)}
+.badge.advanced{background:rgba(124,108,255,.15);color:var(--accent2)}
+.iq .a{color:var(--text2);font-size:14px;line-height:1.75}
+
+/* BEST PRACTICE */
+.bp{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:var(--bg3);border-radius:8px;margin-bottom:10px;border:1px solid var(--border)}
+.bp .bp-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.bp .bp-text{color:var(--text2);font-size:14px}
+.bp .bp-text strong{color:var(--text);display:block;margin-bottom:3px;font-family:var(--font-head);font-size:14px}
+
+/* ROADMAP */
+.roadmap{border-left:2px solid var(--border);padding-left:24px;margin:20px 0}
+.roadmap-step{position:relative;margin-bottom:28px}
+.roadmap-step::before{content:'';width:12px;height:12px;border-radius:50%;background:var(--accent2);position:absolute;left:-30px;top:4px;border:2px solid var(--bg)}
+.roadmap-step h4{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.roadmap-step p{font-size:13.5px;color:var(--text2);margin:0}
+
+/* CHEAT SHEET */
+.cheat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.cheat-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px}
+.cheat-item .ci-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cheat-item .ci-code{font-family:var(--font-mono);font-size:12px;color:var(--accent3);line-height:1.6}
+
+/* TAGS */
+.tag{display:inline-block;background:rgba(124,108,255,.12);color:var(--accent2);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;margin:2px;font-family:var(--font-mono)}
+.tag.green{background:rgba(56,217,169,.12);color:var(--accent3)}
+.tag.red{background:rgba(255,107,107,.12);color:var(--accent4)}
+.tag.yellow{background:rgba(255,212,59,.12);color:var(--accent5)}
+
+/* CONSOLE OUTPUT */
+.console{background:#0a0c10;border:1px solid #1e2330;border-radius:8px;padding:16px;font-family:var(--font-mono);font-size:12.5px;color:#7ec8a0;margin:16px 0;line-height:1.7}
+.console .c-dim{color:#4a5568}
+.console .c-info{color:#4f9eff}
+.console .c-warn{color:#ffd43b}
+.console .c-err{color:#ff6b6b}
+
+/* FOLDER STRUCTURE */
+.folder-tree{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:20px;font-family:var(--font-mono);font-size:13px;line-height:2;color:var(--text2)}
+.folder-tree .dir{color:var(--accent5)}
+.folder-tree .file{color:var(--text2)}
+.folder-tree .java{color:var(--accent3)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%);transition:transform .3s}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0;max-width:100%}
+  .content-wrap{padding:40px 20px 80px}
+  .hero h1{font-size:36px}
+  .cheat-grid{grid-template-columns:1fr}
+  #menu-toggle{display:flex!important}
+}
+#menu-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer;align-items:center;gap:6px;color:var(--text2);font-size:12px;font-family:var(--font-mono)}
+</style>
+</head>
+<body>
+
+<button id="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Menu</button>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <h2>Spring AOP</h2>
+    <p>Masterclass Guide</p>
+  </div>
+
+  <div class="sidebar-section">Foundations</div>
+  <a href="#s1">1. What is AOP?</a>
+  <a href="#s2">2. Real-World Problem</a>
+  <a href="#s3">3. Core Concepts</a>
+  <a href="#s4">4. Architecture</a>
+  <a href="#s5">5. Setup</a>
+  <a href="#s6">6. First Example</a>
+
+  <div class="sidebar-section">Advice Types</div>
+  <a href="#s7">7. @Before</a>
+  <a href="#s8">8. @After</a>
+  <a href="#s9">9. @AfterReturning</a>
+  <a href="#s10">10. @AfterThrowing</a>
+  <a href="#s11">11. @Around</a>
+
+  <div class="sidebar-section">Deep Dives</div>
+  <a href="#s12">12. Pointcut Expressions</a>
+  <a href="#s13">13. JoinPoint Deep Dive</a>
+  <a href="#s14">14. Around Deep Dive</a>
+  <a href="#s15">15. Custom Annotations</a>
+  <a href="#s16">16. Exception Handling</a>
+  <a href="#s17">17. Logging Framework</a>
+
+  <div class="sidebar-section">Internals</div>
+  <a href="#s18">18. @Transactional</a>
+  <a href="#s19">19. Security Internals</a>
+  <a href="#s20">20. Caching & @Async</a>
+
+  <div class="sidebar-section">Mastery</div>
+  <a href="#s21">21. Common Mistakes</a>
+  <a href="#s22">22. Performance</a>
+  <a href="#s23">23. Real Architecture</a>
+  <a href="#s24">24. AOP vs AspectJ</a>
+  <a href="#s25">25. Interview Q&A</a>
+  <a href="#s26">26. Mini Project</a>
+  <a href="#s27">27. Best Practices</a>
+  <a href="#s28">28. Roadmap</a>
+  <a href="#s29">29. Cheat Sheet</a>
+  <a href="#s30">30. Summary</a>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+<div class="content-wrap">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Backend Engineering</div>
+  <h1>Spring AOP Masterclass</h1>
+  <p class="sub">Complete beginner to advanced guide for mastering Aspect Oriented Programming in Spring Boot</p>
+  <p class="note">🎯 Focus: Real-world backend development · Production patterns · Interview prep</p>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 1 ═══ -->
+<section class="toc-section" id="s1">
+<h2 class="section-title"><span class="num">§ 01</span>What is AOP?</h2>
+
+<p>Aspect-Oriented Programming (AOP) is a programming paradigm that aims to increase modularity by allowing the separation of <strong>cross-cutting concerns</strong>. It adds behavior to existing code without modifying the code itself.</p>
+
+<h3 class="sub-title">The Core Problem: Cross-Cutting Concerns</h3>
+<p>In any real application, certain behaviors cut <em>across</em> multiple modules — they are needed everywhere but don't belong to any specific business logic. These are called <strong>cross-cutting concerns</strong>:</p>
+<ul>
+  <li><strong>Logging</strong> — every method needs to log entry/exit</li>
+  <li><strong>Security</strong> — every endpoint needs authorization checks</li>
+  <li><strong>Transaction management</strong> — every DB operation needs commit/rollback</li>
+  <li><strong>Caching</strong> — results need to be cached transparently</li>
+  <li><strong>Performance monitoring</strong> — measure how long methods take</li>
+  <li><strong>Auditing</strong> — track who did what and when</li>
+</ul>
+
+<h3 class="sub-title">Why OOP Alone is Insufficient</h3>
+<p>Object-Oriented Programming is excellent at encapsulating state and behavior into objects. But it struggles when the same concern needs to appear in dozens of unrelated classes. OOP gives us inheritance and interfaces, but these can't solve the problem cleanly.</p>
+
+<div class="diagram">
+  <div class="diagram-title">Without AOP — Cross-Cutting Concerns Scattered Everywhere</div>
+  <div class="flow-row">
+    <div class="flow-box" style="padding:14px 10px;min-width:150px;font-size:12px">UserService<br><span style="color:var(--accent4);font-size:11px">+ log + auth + tx</span></div>
+    <div style="width:16px"></div>
+    <div class="flow-box" style="padding:14px 10px;min-width:150px;font-size:12px">PaymentService<br><span style="color:var(--accent4);font-size:11px">+ log + auth + tx</span></div>
+    <div style="width:16px"></div>
+    <div class="flow-box" style="padding:14px 10px;min-width:150px;font-size:12px">OrderService<br><span style="color:var(--accent4);font-size:11px">+ log + auth + tx</span></div>
+  </div>
+  <p style="text-align:center;color:var(--accent4);font-size:13px;margin-top:12px">❌ Duplicated concern code in every service</p>
+</div>
+
+<div class="diagram">
+  <div class="diagram-title">With AOP — Concerns Applied from a Single Aspect</div>
+  <div class="flow-row">
+    <div class="flow-box" style="min-width:100px;font-size:12px">UserService</div>
+    <div style="width:10px"></div>
+    <div class="flow-box" style="min-width:100px;font-size:12px">PaymentService</div>
+    <div style="width:10px"></div>
+    <div class="flow-box" style="min-width:100px;font-size:12px">OrderService</div>
+  </div>
+  <div class="flow-down">↑ applied to all ↑</div>
+  <div class="flow-row">
+    <div class="flow-box accent2" style="min-width:320px">LoggingAspect (one place)</div>
+  </div>
+  <p style="text-align:center;color:var(--accent3);font-size:13px;margin-top:12px">✅ Single Aspect handles all services</p>
+</div>
+
+<div class="callout">
+  <div class="callout-title">💡 Mental Model</div>
+  Think of AOP like a transparent layer placed over your application. You don't change your services — you add a "glass pane" on top that intercepts every method call and applies the concern. Your business code stays pure.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 2 ═══ -->
+<section class="toc-section" id="s2">
+<h2 class="section-title"><span class="num">§ 02</span>Real-World Problem Before AOP</h2>
+
+<p>Let's look at what happens in a typical Spring Boot project <em>without</em> AOP. The same boilerplate logging code is duplicated across every service.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>UserService.java — Logging Everywhere</div>
+  <pre><code class="language-java">@Service
+public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+    public User createUser(String name, String email) {
+        log.info("==> Entering createUser() with name={}, email={}", name, email); // BOILERPLATE
+        long start = System.currentTimeMillis(); // BOILERPLATE
+        try {
+            // Actual business logic (just 2 lines!)
+            User user = new User(name, email);
+            return userRepository.save(user);
+        } finally {
+            long elapsed = System.currentTimeMillis() - start; // BOILERPLATE
+            log.info("<== Exiting createUser() in {}ms", elapsed); // BOILERPLATE
+        }
+    }
+
+    public User getUser(Long id) {
+        log.info("==> Entering getUser() with id={}", id); // SAME BOILERPLATE
+        long start = System.currentTimeMillis(); // SAME BOILERPLATE
+        try {
+            return userRepository.findById(id).orElseThrow();
+        } finally {
+            log.info("<== Exiting getUser() in {}ms", System.currentTimeMillis() - start); // SAME BOILERPLATE
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>PaymentService.java — Same Boilerplate Repeated</div>
+  <pre><code class="language-java">@Service
+public class PaymentService {
+
+    private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
+
+    public Payment processPayment(Long userId, BigDecimal amount) {
+        log.info("==> Entering processPayment() with userId={}, amount={}", userId, amount); // COPY-PASTE!
+        long start = System.currentTimeMillis();
+        try {
+            // Business logic
+            return paymentGateway.charge(userId, amount);
+        } finally {
+            log.info("<== Exiting processPayment() in {}ms", System.currentTimeMillis() - start);
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>OrderService.java — Pattern Continues...</div>
+  <pre><code class="language-java">@Service
+public class OrderService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
+    public Order createOrder(Long userId, List&lt;Item&gt; items) {
+        log.info("==> Entering createOrder() with userId={}", userId); // AGAIN!
+        long start = System.currentTimeMillis();
+        try {
+            return orderRepository.save(new Order(userId, items));
+        } finally {
+            log.info("<== Exiting createOrder() in {}ms", System.currentTimeMillis() - start);
+        }
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Why This is a Disaster</h3>
+<ul>
+  <li><strong>Violation of DRY</strong> — Don't Repeat Yourself. The same 5 lines are copied in every method.</li>
+  <li><strong>Hard to change</strong> — If you want to change log format, you update 50+ methods.</li>
+  <li><strong>Business logic is buried</strong> — The actual 1-2 lines of logic are hidden in boilerplate.</li>
+  <li><strong>Testing nightmare</strong> — Unit tests now have to deal with logging side effects.</li>
+  <li><strong>Risk of forgetting</strong> — New developers adding new services will forget to add logging.</li>
+</ul>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ The Real Cost</div>
+  In a production app with 100 service methods, that's 500+ lines of pure boilerplate. Change the logging format? 100 manual updates. Miss one? Inconsistent logs in production. AOP solves this entirely.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 3 ═══ -->
+<section class="toc-section" id="s3">
+<h2 class="section-title"><span class="num">§ 03</span>Core AOP Concepts</h2>
+
+<p>Before writing any code, you must deeply understand the 7 core concepts. Each concept has a precise meaning — confusing them in interviews is a common mistake.</p>
+
+<!-- ASPECT -->
+<h3 class="sub-title">1. Aspect</h3>
+<p>An <strong>Aspect</strong> is the modularization of a cross-cutting concern. It's a regular Java class annotated with <code>@Aspect</code> that contains all the advice (behavior) for a particular concern.</p>
+<div class="callout note">
+  <div class="callout-title">🔍 Analogy</div>
+  Think of an Aspect as a <em>security guard company</em>. The company (Aspect) defines all the rules about what to check and how to respond. Individual guards (Advice) execute those rules at specific locations (JoinPoints).
+</div>
+
+<!-- ADVICE -->
+<h3 class="sub-title">2. Advice</h3>
+<p><strong>Advice</strong> is the actual action taken by an Aspect at a particular JoinPoint. It is the code that runs. There are 5 types of advice:</p>
+<ul>
+  <li><code>@Before</code> — runs before the method</li>
+  <li><code>@After</code> — runs after the method (always, like finally)</li>
+  <li><code>@AfterReturning</code> — runs after successful return</li>
+  <li><code>@AfterThrowing</code> — runs after exception is thrown</li>
+  <li><code>@Around</code> — wraps the method, most powerful</li>
+</ul>
+
+<!-- JOINPOINT -->
+<h3 class="sub-title">3. JoinPoint</h3>
+<p>A <strong>JoinPoint</strong> is a specific point in program execution where advice can be applied. In Spring AOP, a JoinPoint is always a <em>method execution</em>. In full AspectJ, it could be field access, constructor calls, etc.</p>
+<div class="callout note">
+  <div class="callout-title">🔍 Analogy</div>
+  JoinPoints are like specific intersections in a city where traffic cameras (advice) can be placed. The cameras don't exist on every inch of road — only at defined intersections.
+</div>
+
+<!-- POINTCUT -->
+<h3 class="sub-title">4. Pointcut</h3>
+<p>A <strong>Pointcut</strong> is an expression that selects which JoinPoints will have advice applied. It's the filter that says "apply my advice to <em>these</em> methods".</p>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Pointcut Examples</div>
+  <pre><code class="language-java">// Apply to ALL methods in UserService
+@Pointcut("execution(* com.example.service.UserService.*(..))")
+public void userServiceMethods() {}
+
+// Apply to ALL methods in ALL classes in the service package
+@Pointcut("execution(* com.example.service.*.*(..))")
+public void allServiceMethods() {}
+
+// Apply to methods annotated with @LogExecutionTime
+@Pointcut("@annotation(com.example.annotation.LogExecutionTime)")
+public void loggedMethods() {}</code></pre>
+</div>
+
+<!-- WEAVING -->
+<h3 class="sub-title">5. Weaving</h3>
+<p><strong>Weaving</strong> is the process of linking Aspects with other application types or objects to create an advised object. Spring AOP does weaving at <em>runtime</em> using proxies.</p>
+<div class="diagram">
+  <div class="diagram-title">Weaving Process</div>
+  <div class="flow-row">
+    <div class="flow-box">Your Class<br><span style="font-size:11px;color:var(--text3)">UserService</span></div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box accent2">Aspect<br><span style="font-size:11px;color:var(--text3)">LoggingAspect</span></div>
+    <div class="flow-arrow">→ weaving →</div>
+    <div class="flow-box accent3">Proxy Object<br><span style="font-size:11px;color:var(--text3)">Enhanced UserService</span></div>
+  </div>
+</div>
+
+<!-- TARGET OBJECT -->
+<h3 class="sub-title">6. Target Object</h3>
+<p>The <strong>Target Object</strong> is the original object being advised — your actual service class. The proxy wraps around it and delegates calls to it after applying advice.</p>
+
+<!-- PROXY -->
+<h3 class="sub-title">7. Proxy</h3>
+<p>The <strong>Proxy</strong> is the object created by Spring to implement the Aspect contracts. When you autowire a service, you actually get the proxy, not the real object. The proxy intercepts calls and applies advice before/after delegating to the real object.</p>
+
+<div class="diagram">
+  <div class="diagram-title">Full AOP Execution Flow</div>
+  <div class="flow-row">
+    <div class="flow-box">Client Code</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent2">Proxy Object</div>
+    <div class="flow-arrow">→ applies advice →</div>
+    <div class="flow-box accent3">Target Object<br><span style="font-size:11px;color:var(--text3)">(real service)</span></div>
+  </div>
+  <div style="margin-top:12px;padding:10px;background:var(--bg);border-radius:6px;font-size:12px;color:var(--text3);text-align:center">
+    Client thinks it's calling UserService directly, but is actually calling the Proxy
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 4 ═══ -->
+<section class="toc-section" id="s4">
+<h2 class="section-title"><span class="num">§ 04</span>Spring AOP Architecture</h2>
+
+<h3 class="sub-title">How Spring Creates Proxies</h3>
+<p>When the Spring container starts, it scans for beans annotated with <code>@Aspect</code>. For every bean that matches a pointcut, Spring creates a proxy. This is done by the <code>AnnotationAwareAspectJAutoProxyCreator</code> — a special BeanPostProcessor.</p>
+
+<div class="diagram">
+  <div class="diagram-title">Spring Bean Lifecycle with AOP</div>
+  <div class="flow-row">
+    <div class="flow-box">Bean Definition<br><span style="font-size:11px;color:var(--text3)">XML / @Bean / @Component</span></div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box">Instantiation<br><span style="font-size:11px;color:var(--text3)">new UserService()</span></div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box">Dependency Injection<br><span style="font-size:11px;color:var(--text3)">@Autowired fields set</span></div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box accent2">BeanPostProcessor<br><span style="font-size:11px;color:var(--text3)">AOP Proxy Creator fires</span></div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box accent3">Proxy Created<br><span style="font-size:11px;color:var(--text3)">Wraps original bean</span></div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box">Proxy registered in context<br><span style="font-size:11px;color:var(--text3)">@Autowired gets proxy</span></div>
+  </div>
+</div>
+
+<h3 class="sub-title">Two Types of Proxies</h3>
+<p>Spring AOP supports two proxy mechanisms. Understanding when each is used is critical for debugging AOP issues.</p>
+
+<h4 class="mini-title">JDK Dynamic Proxy</h4>
+<p>Used when the target object <strong>implements at least one interface</strong>. Spring creates a proxy that implements the same interface(s) and delegates calls to the target.</p>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>JDK Dynamic Proxy — Interface-based</div>
+  <pre><code class="language-java">// Interface exists
+public interface UserService {
+    User createUser(String name);
+}
+
+// Implementation
+@Service
+public class UserServiceImpl implements UserService {
+    public User createUser(String name) { ... }
+}
+
+// Spring creates: Proxy implements UserService, delegates to UserServiceImpl
+// Type: java.lang.reflect.Proxy</code></pre>
+</div>
+
+<h4 class="mini-title">CGLIB Proxy</h4>
+<p>Used when the target object <strong>does NOT implement an interface</strong> (or when <code>proxyTargetClass=true</code>). CGLIB (Code Generation Library) generates a subclass of the target class at runtime and overrides all non-final methods.</p>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>CGLIB Proxy — Subclass-based</div>
+  <pre><code class="language-java">// No interface — CGLIB is used
+@Service
+public class OrderService {
+    public Order createOrder(Long userId) { ... }
+}
+
+// CGLIB creates: class OrderService$$EnhancerBySpringCGLIB extends OrderService
+// Overrides createOrder() to apply advice
+// proxyTargetClass = true forces CGLIB even with interfaces</code></pre>
+</div>
+
+<table>
+  <thead><tr><th>Feature</th><th>JDK Dynamic Proxy</th><th>CGLIB Proxy</th></tr></thead>
+  <tbody>
+    <tr><td>Requirement</td><td>Interface must exist</td><td>Works without interface</td></tr>
+    <tr><td>Mechanism</td><td>Implements interface</td><td>Subclasses the class</td></tr>
+    <tr><td>Final class?</td><td>N/A</td><td><span class="cross">✗ Can't proxy final classes</span></td></tr>
+    <tr><td>Final method?</td><td>N/A</td><td><span class="cross">✗ Can't intercept final methods</span></td></tr>
+    <tr><td>Private method?</td><td><span class="cross">✗ No</span></td><td><span class="cross">✗ No</span></td></tr>
+    <tr><td>Performance</td><td>Slightly faster creation</td><td>Faster invocation</td></tr>
+    <tr><td>Spring Boot default</td><td>No (since Boot 2.x)</td><td><span class="check">✓ Default since Boot 2.x</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout note">
+  <div class="callout-title">📌 Spring Boot 2.x+ Change</div>
+  Since Spring Boot 2.0, CGLIB is the default proxy strategy even when interfaces exist. This was changed to avoid common mistakes. You can revert to JDK proxies with <code>spring.aop.proxy-target-class=false</code>.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 5 ═══ -->
+<section class="toc-section" id="s5">
+<h2 class="section-title"><span class="num">§ 05</span>Setting Up Spring AOP</h2>
+
+<h3 class="sub-title">Dependencies</h3>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Maven — pom.xml</div>
+  <pre><code class="language-xml">&lt;!-- Spring Boot Starter AOP --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;!-- This transitively includes: --&gt;
+&lt;!-- spring-aop (core AOP framework) --&gt;
+&lt;!-- aspectjweaver (AspectJ expression parsing) --&gt;
+&lt;!-- aspectjrt (AspectJ runtime) --&gt;</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Gradle — build.gradle</div>
+  <pre><code class="language-groovy">dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Enable AOP</h3>
+<p>With Spring Boot, AOP is auto-configured when you include the starter. But with plain Spring, you need to enable it explicitly:</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Configuration Setup</div>
+  <pre><code class="language-java">// Spring Boot: auto-configured — no extra annotation needed
+// But for pure Spring (non-Boot), add this:
+
+@Configuration
+@EnableAspectJAutoProxy // Enables AspectJ-style AOP
+public class AppConfig {
+    // This registers the AnnotationAwareAspectJAutoProxyCreator
+}
+
+// With proxyTargetClass=true (forces CGLIB):
+@EnableAspectJAutoProxy(proxyTargetClass = true)</code></pre>
+</div>
+
+<h3 class="sub-title">Creating Your First Aspect</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Minimal Aspect Structure</div>
+  <pre><code class="language-java">package com.example.aspect;
+
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
+@Aspect      // Marks this as an Aspect (AspectJ annotation)
+@Component   // Registers as a Spring Bean (so Spring manages it)
+public class LoggingAspect {
+
+    // Advice methods go here
+    // @Before, @After, @Around, etc.
+    
+}</code></pre>
+</div>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ Common Mistake</div>
+  Forgetting <code>@Component</code> is a very common mistake. <code>@Aspect</code> alone does NOT register the class as a Spring Bean. Without <code>@Component</code>, Spring won't find it and the aspect does nothing.
+</div>
+
+<h3 class="sub-title">Application Properties</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>application.properties</div>
+  <pre><code class="language-properties"># Force CGLIB proxy (default in Boot 2.x+)
+spring.aop.proxy-target-class=true
+
+# Enable AspectJ auto proxy
+spring.aop.auto=true</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 6 ═══ -->
+<section class="toc-section" id="s6">
+<h2 class="section-title"><span class="num">§ 06</span>First Complete AOP Example</h2>
+
+<h3 class="sub-title">Project Structure</h3>
+<div class="folder-tree">
+src/main/java/com/example/<br>
+├── <span class="dir">controller/</span><br>
+│   └── <span class="java">UserController.java</span><br>
+├── <span class="dir">service/</span><br>
+│   └── <span class="java">UserService.java</span><br>
+├── <span class="dir">aspect/</span><br>
+│   └── <span class="java">LoggingAspect.java</span><br>
+├── <span class="dir">model/</span><br>
+│   └── <span class="java">User.java</span><br>
+└── <span class="java">Application.java</span>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>UserController.java</div>
+  <pre><code class="language-java">@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity&lt;User&gt; getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;User&gt; createUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.createUser(user));
+    }
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>UserService.java — Clean! No Logging Code</div>
+  <pre><code class="language-java">@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public User findById(Long id) {
+        // PURE BUSINESS LOGIC — no logging clutter!
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException("User not found: " + id));
+    }
+
+    public User createUser(User user) {
+        // PURE BUSINESS LOGIC
+        user.setCreatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>LoggingAspect.java — All Logging in One Place</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class LoggingAspect {
+
+    // Pointcut: all public methods in the service package
+    @Pointcut("execution(public * com.example.service.*.*(..))")
+    public void serviceLayer() {}
+
+    // Before Advice: runs before every service method
+    @Before("serviceLayer()")
+    public void logMethodEntry(JoinPoint joinPoint) {
+        String className = joinPoint.getTarget().getClass().getSimpleName();
+        String methodName = joinPoint.getSignature().getName();
+        Object[] args = joinPoint.getArgs();
+        log.info("==> {}.{}() called with args: {}", className, methodName, Arrays.toString(args));
+    }
+
+    // After Returning: runs after successful execution
+    @AfterReturning(pointcut = "serviceLayer()", returning = "result")
+    public void logMethodExit(JoinPoint joinPoint, Object result) {
+        String methodName = joinPoint.getSignature().getName();
+        log.info("<== {}() returned: {}", methodName, result);
+    }
+
+    // After Throwing: runs on exception
+    @AfterThrowing(pointcut = "serviceLayer()", throwing = "ex")
+    public void logException(JoinPoint joinPoint, Exception ex) {
+        String methodName = joinPoint.getSignature().getName();
+        log.error("❌ {}() threw: {}", methodName, ex.getMessage());
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Console Output</h3>
+<div class="console">
+<span class="c-info">INFO</span>  c.e.aspect.LoggingAspect : ==> UserService.findById() called with args: [42]<br>
+<span class="c-info">INFO</span>  c.e.aspect.LoggingAspect : &lt;== findById() returned: User{id=42, name='Alice'}<br>
+<br>
+<span class="c-info">INFO</span>  c.e.aspect.LoggingAspect : ==> UserService.createUser() called with args: [User{name='Bob'}]<br>
+<span class="c-info">INFO</span>  c.e.aspect.LoggingAspect : &lt;== createUser() returned: User{id=43, name='Bob'}<br>
+<br>
+<span class="c-err">ERROR</span> c.e.aspect.LoggingAspect : ❌ findById() threw: User not found: 99
+</div>
+
+<h3 class="sub-title">Request Execution Flow</h3>
+<div class="diagram">
+  <div class="diagram-title">HTTP Request → Controller → Proxy → Aspect → Service</div>
+  <div class="flow-row">
+    <div class="flow-box">HTTP GET /users/42</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">UserController</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent2">UserService Proxy</div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box accent">@Before fires<br><span style="font-size:11px">log entry</span></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent3">Real UserService<br><span style="font-size:11px">findById(42)</span></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent">@AfterReturning<br><span style="font-size:11px">log result</span></div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box">Response: User{id=42}</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTIONS 7-11 — ADVICE TYPES ═══ -->
+<section class="toc-section" id="s7">
+<h2 class="section-title"><span class="num">§ 07</span>@Before Advice</h2>
+
+<p><code>@Before</code> advice runs <strong>before</strong> the matched method executes. It cannot stop the method from executing (unless it throws an exception).</p>
+
+<div class="diagram">
+  <div class="diagram-title">@Before Execution Timeline</div>
+  <div class="flow-row">
+    <div class="flow-box accent">@Before runs</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Target Method</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Return value</div>
+  </div>
+</div>
+
+<h4 class="mini-title">Real Use Cases</h4>
+<ul>
+  <li>Logging method entry</li>
+  <li>Input validation</li>
+  <li>Security permission checks (throw if unauthorized)</li>
+  <li>Starting a performance timer</li>
+</ul>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@Before — Complete Examples</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class BeforeExamples {
+
+    // ─── Example 1: Method entry logging ───
+    @Before("execution(* com.example.service.*.*(..))")
+    public void logEntry(JoinPoint jp) {
+        log.info("Entering: {}.{}()",
+            jp.getTarget().getClass().getSimpleName(),
+            jp.getSignature().getName());
+    }
+
+    // ─── Example 2: Input validation ───
+    @Before("execution(* com.example.service.UserService.createUser(..))")
+    public void validateUserInput(JoinPoint jp) {
+        Object[] args = jp.getArgs();
+        User user = (User) args[0];
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email cannot be empty");
+            // Method is never called — @Before throws to prevent execution
+        }
+    }
+
+    // ─── Example 3: Security check ───
+    @Before("execution(* com.example.service.AdminService.*(..))")
+    public void checkAdminRole(JoinPoint jp) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            throw new AccessDeniedException("Admin role required");
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="console">
+<span class="c-info">INFO</span>  Entering: UserService.createUser()<br>
+<span class="c-err">ERROR</span> [validation] Email cannot be empty — method aborted
+</div>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ Common Mistake</div>
+  <code>@Before</code> cannot change the method's arguments or return value. If you need to modify behavior, use <code>@Around</code>.
+</div>
+</section>
+
+<section class="toc-section" id="s8">
+<h2 class="section-title"><span class="num">§ 08</span>@After Advice</h2>
+
+<p><code>@After</code> runs after the method completes — whether it returned normally <em>or</em> threw an exception. It's the AOP equivalent of a <code>finally</code> block. It cannot access the return value.</p>
+
+<div class="diagram">
+  <div class="diagram-title">@After Execution Timeline</div>
+  <div class="flow-row">
+    <div class="flow-box">Target Method</div>
+    <div class="flow-arrow">→ (success or exception)</div>
+    <div class="flow-box accent">@After runs</div>
+  </div>
+</div>
+
+<h4 class="mini-title">Real Use Cases</h4>
+<ul>
+  <li>Releasing resources (connections, locks)</li>
+  <li>Cleanup operations</li>
+  <li>Audit trail recording (log that a method was called, regardless of outcome)</li>
+</ul>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@After — Cleanup and Audit</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class AfterExamples {
+
+    // ─── Example 1: Audit trail ───
+    // Runs whether the operation succeeded or failed
+    @After("execution(* com.example.service.PaymentService.*(..))")
+    public void recordAuditTrail(JoinPoint jp) {
+        String method = jp.getSignature().getName();
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("[AUDIT] User '{}' invoked PaymentService.{}", user, method);
+        // Always recorded, even if payment failed
+    }
+
+    // ─── Example 2: MDC Cleanup (important for logging) ───
+    @After("execution(* com.example.web..*.*(..))")
+    public void clearMdc() {
+        MDC.clear(); // Always clean up MDC context after request processing
+    }
+    
+    // ─── Example 3: Lock release ───
+    @After("execution(* com.example.service.InventoryService.reserveItem(..))")
+    public void releaseInventoryLock(JoinPoint jp) {
+        Long itemId = (Long) jp.getArgs()[0];
+        lockManager.releaseLock("inventory:" + itemId);
+        log.debug("Released lock for item {}", itemId);
+    }
+}</code></pre>
+</div>
+</section>
+
+<section class="toc-section" id="s9">
+<h2 class="section-title"><span class="num">§ 09</span>@AfterReturning Advice</h2>
+
+<p><code>@AfterReturning</code> runs only when the method completes <em>successfully</em> (no exception). Unlike <code>@After</code>, it <strong>can access the return value</strong> via the <code>returning</code> attribute.</p>
+
+<div class="diagram">
+  <div class="diagram-title">@AfterReturning vs @After</div>
+  <div class="flow-row">
+    <div class="flow-box">Method returns normally</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent3">@AfterReturning ✓</div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box accent">@After ✓</div>
+  </div>
+  <div style="margin:8px 0"></div>
+  <div class="flow-row">
+    <div class="flow-box">Method throws exception</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent4">@AfterReturning ✗</div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-box accent">@After ✓</div>
+  </div>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@AfterReturning — Accessing Return Value</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class AfterReturningExamples {
+
+    // ─── Example 1: Log the result ───
+    @AfterReturning(
+        pointcut = "execution(* com.example.service.UserService.findById(..))",
+        returning = "user"  // Binds to the return value
+    )
+    public void logUserFetched(JoinPoint jp, User user) {
+        log.info("User fetched: id={}, name={}", user.getId(), user.getName());
+    }
+
+    // ─── Example 2: Cache population ───
+    @AfterReturning(
+        pointcut = "execution(* com.example.service.ProductService.findProduct(..))",
+        returning = "product"
+    )
+    public void populateCache(JoinPoint jp, Product product) {
+        if (product != null) {
+            String cacheKey = "product:" + product.getId();
+            cacheManager.put(cacheKey, product);
+            log.debug("Cached product {}", product.getId());
+        }
+    }
+
+    // ─── Example 3: Notification after user creation ───
+    @AfterReturning(
+        pointcut = "execution(* com.example.service.UserService.createUser(..))",
+        returning = "savedUser"
+    )
+    public void sendWelcomeEmail(User savedUser) {
+        // Send welcome email to the newly created user
+        emailService.sendWelcome(savedUser.getEmail(), savedUser.getName());
+    }
+    
+    // NOTE: You CANNOT change the return value from @AfterReturning
+    // To modify return value, use @Around
+}</code></pre>
+</div>
+</section>
+
+<section class="toc-section" id="s10">
+<h2 class="section-title"><span class="num">§ 10</span>@AfterThrowing Advice</h2>
+
+<p><code>@AfterThrowing</code> runs only when the matched method throws an exception. It can access the thrown exception. It does <strong>not</strong> suppress the exception — the exception still propagates to the caller.</p>
+
+<div class="diagram">
+  <div class="diagram-title">@AfterThrowing Timeline</div>
+  <div class="flow-row">
+    <div class="flow-box">Method throws exception</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent4">@AfterThrowing fires</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Exception propagates</div>
+  </div>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@AfterThrowing — Exception Monitoring</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class ExceptionMonitoringAspect {
+
+    // ─── Example 1: Log all service exceptions ───
+    @AfterThrowing(
+        pointcut = "execution(* com.example.service.*.*(..))",
+        throwing = "ex"  // Binds to the thrown exception
+    )
+    public void logServiceException(JoinPoint jp, Exception ex) {
+        String method = jp.getSignature().toShortString();
+        log.error("Exception in {}: [{}] {}", method, ex.getClass().getSimpleName(), ex.getMessage());
+    }
+
+    // ─── Example 2: Alert on specific exceptions ───
+    @AfterThrowing(
+        pointcut = "execution(* com.example.service.PaymentService.*(..))",
+        throwing = "ex"
+    )
+    public void alertOnPaymentFailure(JoinPoint jp, RuntimeException ex) {
+        // Only fires for RuntimeException and subclasses
+        String method = jp.getSignature().getName();
+        alertingService.sendAlert(
+            "PAYMENT_FAILURE",
+            "Method: " + method + " | Error: " + ex.getMessage()
+        );
+    }
+
+    // ─── Example 3: Track error metrics ───
+    @AfterThrowing(
+        pointcut = "within(com.example..*)",
+        throwing = "ex"
+    )
+    public void trackErrorMetrics(JoinPoint jp, Throwable ex) {
+        String className = jp.getTarget().getClass().getSimpleName();
+        metricsRegistry.counter("errors",
+            "class", className,
+            "exception", ex.getClass().getSimpleName()
+        ).increment();
+    }
+}</code></pre>
+</div>
+
+<div class="callout note">
+  <div class="callout-title">📌 Exception Filtering</div>
+  The <code>throwing</code> parameter type acts as a filter. If you declare <code>RuntimeException ex</code>, the advice only fires for RuntimeException and subclasses. Declare <code>Throwable ex</code> to catch everything.
+</div>
+</section>
+
+<section class="toc-section" id="s11">
+<h2 class="section-title"><span class="num">§ 11</span>@Around Advice</h2>
+
+<p><code>@Around</code> is the most powerful advice type. It completely wraps the method execution. You control whether the method runs at all, can modify arguments, can change the return value, and can catch exceptions. Use it carefully.</p>
+
+<div class="diagram">
+  <div class="diagram-title">@Around — Complete Control</div>
+  <div class="flow-row">
+    <div class="flow-box accent2">@Around starts</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent">proceed()</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Target Method</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent">result</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent2">@Around ends</div>
+  </div>
+  <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:10px">You can skip proceed() to never call the method, or call it multiple times (retry)</p>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@Around — Complete Examples</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class AroundExamples {
+
+    // ─── Example 1: Execution Time Measurement ───
+    @Around("execution(* com.example.service.*.*(..))")
+    public Object measureExecutionTime(ProceedingJoinPoint pjp) throws Throwable {
+        long start = System.currentTimeMillis();
+        
+        try {
+            Object result = pjp.proceed(); // Call the actual method
+            long elapsed = System.currentTimeMillis() - start;
+            log.info("[PERF] {}.{}() completed in {}ms",
+                pjp.getTarget().getClass().getSimpleName(),
+                pjp.getSignature().getName(),
+                elapsed);
+            return result; // MUST return the result!
+            
+        } catch (Exception ex) {
+            long elapsed = System.currentTimeMillis() - start;
+            log.error("[PERF] {}.{}() FAILED in {}ms: {}",
+                pjp.getTarget().getClass().getSimpleName(),
+                pjp.getSignature().getName(),
+                elapsed, ex.getMessage());
+            throw ex; // Re-throw! Don't swallow exceptions silently
+        }
+    }
+
+    // ─── Example 2: Retry Mechanism ───
+    @Around("@annotation(com.example.annotation.Retryable)")
+    public Object retryOnFailure(ProceedingJoinPoint pjp) throws Throwable {
+        int maxRetries = 3;
+        int attempt = 0;
+        
+        while (attempt < maxRetries) {
+            try {
+                return pjp.proceed(); // Try to execute
+            } catch (TransientException ex) {
+                attempt++;
+                if (attempt >= maxRetries) throw ex;
+                log.warn("Attempt {} failed, retrying: {}", attempt, ex.getMessage());
+                Thread.sleep(1000L * attempt); // Exponential-ish backoff
+            }
+        }
+        throw new RuntimeException("Should not reach here");
+    }
+
+    // ─── Example 3: Modify Arguments ───
+    @Around("execution(* com.example.service.UserService.createUser(..))")
+    public Object sanitizeInput(ProceedingJoinPoint pjp) throws Throwable {
+        Object[] args = pjp.getArgs();
+        User user = (User) args[0];
+        
+        // Sanitize input before passing to method
+        user.setEmail(user.getEmail().toLowerCase().trim());
+        user.setName(StringUtils.capitalize(user.getName().trim()));
+        
+        return pjp.proceed(args); // Pass modified args
+    }
+
+    // ─── Example 4: Cache ───
+    @Around("execution(* com.example.service.ProductService.getProduct(..))")
+    public Object cacheResult(ProceedingJoinPoint pjp) throws Throwable {
+        Long productId = (Long) pjp.getArgs()[0];
+        String cacheKey = "product:" + productId;
+        
+        Object cached = cache.get(cacheKey);
+        if (cached != null) {
+            log.debug("Cache HIT for {}", cacheKey);
+            return cached; // Return from cache, skip actual method!
+        }
+        
+        Object result = pjp.proceed(); // Cache miss — call the real method
+        cache.put(cacheKey, result);
+        return result;
+    }
+}</code></pre>
+</div>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ Critical Rules for @Around</div>
+  <ol style="margin:8px 0 0 16px">
+    <li style="margin-bottom:6px"><strong>Always return the result</strong> of <code>pjp.proceed()</code>. Returning <code>null</code> silently breaks the caller.</li>
+    <li style="margin-bottom:6px"><strong>Always rethrow exceptions</strong> unless you explicitly want to swallow them.</li>
+    <li style="margin-bottom:6px">The method signature must declare <code>throws Throwable</code>.</li>
+    <li>Use <code>ProceedingJoinPoint</code>, not <code>JoinPoint</code> — only PJP has <code>proceed()</code>.</li>
+  </ol>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 12 ═══ -->
+<section class="toc-section" id="s12">
+<h2 class="section-title"><span class="num">§ 12</span>Pointcut Expressions Deep Dive</h2>
+
+<p>Pointcut expressions are the most critical skill in Spring AOP. Writing them correctly determines which methods get intercepted. Mastering the syntax separates beginner from senior-level AOP usage.</p>
+
+<h3 class="sub-title">execution() — The Primary Designator</h3>
+<p>The <code>execution()</code> designator matches method execution JoinPoints. The full syntax:</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>execution() Full Syntax</div>
+  <pre><code class="language-java">execution(
+  [modifiers]          // public, private, protected (optional)
+  [return-type]        // *, void, String, com.example.User
+  [declaring-type].    // com.example.service.UserService (optional)
+  [method-name]        // createUser, get*, *
+  ([param-pattern])    // (), (..), (String), (String, ..)
+  [throws-pattern]     // throws IOException (optional)
+)</code></pre>
+</div>
+
+<h4 class="mini-title">Wildcard Reference</h4>
+<table>
+  <thead><tr><th>Wildcard</th><th>Meaning</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td><code>*</code></td><td>Any single element (type, method, package segment)</td><td><code>execution(* get*(..))</code> — any method starting with "get"</td></tr>
+    <tr><td><code>..</code></td><td>Any number of arguments OR any sub-packages</td><td><code>execution(* com.example..*.*(..))</code> — any class in any subpackage</td></tr>
+    <tr><td><code>+</code></td><td>This type and all subtypes</td><td><code>within(com.example.Service+)</code></td></tr>
+  </tbody>
+</table>
+
+<h4 class="mini-title">execution() Examples</h4>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Pointcut Expression Examples — From Simple to Complex</div>
+  <pre><code class="language-java">// ─── Match ALL public methods in UserService ───
+execution(public * com.example.service.UserService.*(..))
+
+// ─── Match any method starting with "get" in any service ───
+execution(* com.example.service.*.get*(..))
+
+// ─── Match methods returning String ───
+execution(String com.example.service.*.*(..))
+
+// ─── Match methods with NO parameters ───
+execution(* com.example.service.*.*(  ))
+
+// ─── Match methods with exactly ONE String parameter ───
+execution(* com.example.service.*.*(String))
+
+// ─── Match methods with String as FIRST param (any others) ───
+execution(* com.example.service.*.*(String, ..))
+
+// ─── Match ALL methods in ALL classes in service package (not subpackages) ───
+execution(* com.example.service.*.*(..))
+
+// ─── Match ALL methods in ALL classes in service AND subpackages ───
+execution(* com.example.service..*.*(..))
+
+// ─── Interview-level: Match void methods with Long first param ───
+execution(void com.example..*.*(Long, ..))
+
+// ─── Combine with && || ! ───
+// All service methods BUT NOT those named "toString" or "hashCode"
+execution(* com.example.service.*.*(..)) &amp;&amp; !execution(* *.toString(..)) &amp;&amp; !execution(* *.hashCode(..))</code></pre>
+</div>
+
+<h3 class="sub-title">within() — Match by Type</h3>
+<p><code>within()</code> matches all JoinPoints within a specific type or package. Simpler than <code>execution()</code> for package-level matching.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>within() Examples</div>
+  <pre><code class="language-java">// All methods in UserService
+within(com.example.service.UserService)
+
+// All methods in ANY class in service package
+within(com.example.service.*)
+
+// All methods in service package AND sub-packages
+within(com.example.service..*) 
+
+// All methods in classes annotated with @Service
+within(@org.springframework.stereotype.Service *)</code></pre>
+</div>
+
+<h3 class="sub-title">@annotation() — Target Custom Annotations</h3>
+<p>Matches methods that have a specific annotation. This is the key to building custom AOP behavior.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@annotation() Examples</div>
+  <pre><code class="language-java">// Match methods annotated with @LogExecutionTime
+@annotation(com.example.annotation.LogExecutionTime)
+
+// Match methods annotated with @Transactional (Spring's own!)
+@annotation(org.springframework.transaction.annotation.Transactional)
+
+// Match methods annotated with @PreAuthorize
+@annotation(org.springframework.security.access.prepost.PreAuthorize)</code></pre>
+</div>
+
+<h3 class="sub-title">bean() — Match by Bean Name</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>bean() Examples</div>
+  <pre><code class="language-java">// Match methods in the bean named "userService"
+bean(userService)
+
+// Match all beans with name starting with "Service"
+bean(*Service)
+
+// Match all beans with name ending in "Repository"
+bean(*Repository)</code></pre>
+</div>
+
+<h3 class="sub-title">args() — Match by Argument Types</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>args() Examples + Binding</div>
+  <pre><code class="language-java">// Match methods with a single Long argument
+args(Long)
+
+// Match methods where first arg is Long (any others OK)
+args(Long, ..)
+
+// Bind arguments to advice parameters
+@Before("execution(* com.example.service.UserService.*(..)) &amp;&amp; args(userId, ..)")
+public void trackUserId(JoinPoint jp, Long userId) {
+    // userId is bound from the first argument automatically
+    log.info("Operation on user: {}", userId);
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Named Pointcuts (Reusability)</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Reusable Pointcut Definitions</div>
+  <pre><code class="language-java">@Aspect
+@Component
+public class PointcutLibrary {
+
+    // ─── Define once, reuse everywhere ───
+    @Pointcut("execution(* com.example.service.*.*(..))")
+    public void serviceLayer() {}
+
+    @Pointcut("execution(* com.example.repository.*.*(..))")
+    public void repositoryLayer() {}
+
+    @Pointcut("@annotation(com.example.annotation.LogExecutionTime)")
+    public void loggedMethods() {}
+
+    // Composed pointcut
+    @Pointcut("serviceLayer() || repositoryLayer()")
+    public void dataAccessLayer() {}
+}
+
+// Use in another aspect
+@Aspect
+@Component
+public class TimingAspect {
+
+    @Around("com.example.aspect.PointcutLibrary.serviceLayer()")
+    public Object measureTime(ProceedingJoinPoint pjp) throws Throwable {
+        // ...
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Common Mistakes in Pointcut Expressions</h3>
+<div class="callout warn">
+  <div class="callout-title">❌ Bad: Missing double-dot for subpackages</div>
+  <code>execution(* com.example.service.*.*(..))
+</code> does NOT match <code>com.example.service.user.UserService</code><br><br>
+  <span style="color:var(--accent3)">✅ Fix:</span> <code>execution(* com.example.service..*.*(..))
+</code> with <code>..</code> before <code>*</code>
+</div>
+<div class="callout warn">
+  <div class="callout-title">❌ Bad: Forgetting return type wildcard</div>
+  <code>execution(com.example.service.*.*(..))</code> — missing return type wildcard<br><br>
+  <span style="color:var(--accent3)">✅ Fix:</span> <code>execution(* com.example.service.*.*(..))</code>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 13 ═══ -->
+<section class="toc-section" id="s13">
+<h2 class="section-title"><span class="num">§ 13</span>JoinPoint Deep Dive</h2>
+
+<p>The <code>JoinPoint</code> object is injected into advice methods (except <code>@Around</code>, which uses <code>ProceedingJoinPoint</code>). It gives you full access to information about the intercepted method call.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Everything You Can Access from JoinPoint</div>
+  <pre><code class="language-java">@Before("execution(* com.example.service.*.*(..))")
+public void inspect(JoinPoint jp) {
+
+    // ─── Method Information ───
+    String methodName = jp.getSignature().getName();
+    // → "createUser"
+
+    String fullSignature = jp.getSignature().toLongString();
+    // → "public com.example.model.User com.example.service.UserService.createUser(com.example.model.User)"
+
+    String shortSignature = jp.getSignature().toShortString();
+    // → "UserService.createUser(..)"
+
+    // ─── Arguments ───
+    Object[] args = jp.getArgs();
+    // → [User{name='Alice', email='alice@example.com'}]
+
+    // Cast specific argument
+    if (args.length > 0 &amp;&amp; args[0] instanceof User) {
+        User user = (User) args[0];
+        log.info("Creating user: {}", user.getName());
+    }
+
+    // ─── Target Object (the real service) ───
+    Object target = jp.getTarget();
+    // → UserService instance
+
+    Class&lt;?&gt; targetClass = jp.getTarget().getClass();
+    // → class com.example.service.UserService
+
+    String className = jp.getTarget().getClass().getSimpleName();
+    // → "UserService"
+
+    // ─── This (the proxy object) ───
+    Object proxy = jp.getThis();
+    // → UserService$$EnhancerBySpringCGLIB (proxy)
+
+    // ─── Kind of join point ───
+    String kind = jp.getKind();
+    // → "method-execution"
+
+    // ─── Source location (for debugging) ───
+    SourceLocation loc = jp.getSourceLocation();
+    // → Line number, class, etc.
+
+    // ─── MethodSignature for more detail ───
+    MethodSignature sig = (MethodSignature) jp.getSignature();
+    Method method = sig.getMethod();
+    Class&lt;?&gt; returnType = sig.getReturnType();
+    Class&lt;?&gt;[] paramTypes = sig.getParameterTypes();
+    String[] paramNames = sig.getParameterNames();
+    // → ["user"]
+
+    // ─── Access method annotations ───
+    Transactional tx = method.getAnnotation(Transactional.class);
+    boolean isTransactional = tx != null;
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Production-Grade Logging with JoinPoint</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Rich Structured Logging System</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class StructuredLoggingAspect {
+
+    @Around("execution(* com.example.service.*.*(..))")
+    public Object structuredLog(ProceedingJoinPoint pjp) throws Throwable {
+        MethodSignature sig = (MethodSignature) pjp.getSignature();
+        String[] paramNames = sig.getParameterNames();
+        Object[] paramValues = pjp.getArgs();
+        String className = pjp.getTarget().getClass().getSimpleName();
+        String methodName = sig.getName();
+        
+        // Build parameter map for structured logging
+        Map&lt;String, Object&gt; params = new LinkedHashMap&lt;&gt;();
+        for (int i = 0; i &lt; paramNames.length; i++) {
+            params.put(paramNames[i], sanitize(paramValues[i]));
+        }
+        
+        // Add to MDC for correlation
+        String callId = UUID.randomUUID().toString().substring(0, 8);
+        MDC.put("callId", callId);
+        
+        long start = System.nanoTime();
+        log.info("[{}] → {}.{}() params={}", callId, className, methodName, params);
+        
+        try {
+            Object result = pjp.proceed();
+            long ms = (System.nanoTime() - start) / 1_000_000;
+            log.info("[{}] ← {}.{}() success in {}ms", callId, className, methodName, ms);
+            return result;
+        } catch (Exception ex) {
+            long ms = (System.nanoTime() - start) / 1_000_000;
+            log.error("[{}] ✗ {}.{}() failed in {}ms: {}", callId, className, methodName, ms, ex.getMessage());
+            throw ex;
+        } finally {
+            MDC.remove("callId");
+        }
+    }
+    
+    private Object sanitize(Object value) {
+        if (value == null) return null;
+        String str = value.toString();
+        // Redact sensitive data
+        if (str.contains("password") || str.contains("ssn")) return "***REDACTED***";
+        return str.length() > 200 ? str.substring(0, 200) + "..." : str;
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 14 ═══ -->
+<section class="toc-section" id="s14">
+<h2 class="section-title"><span class="num">§ 14</span>Around Advice Deep Dive</h2>
+
+<h3 class="sub-title">ProceedingJoinPoint — The Extra Power</h3>
+<p><code>ProceedingJoinPoint</code> extends <code>JoinPoint</code> by adding the <code>proceed()</code> method. This is the method that actually calls the target. You can call it zero times (skip), once (normal), or multiple times (retry).</p>
+
+<h3 class="sub-title">Production-Grade Performance Monitor</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Micrometer-based Performance Monitor</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class PerformanceMonitorAspect {
+
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    @Around("within(@org.springframework.stereotype.Service *)")
+    public Object monitorPerformance(ProceedingJoinPoint pjp) throws Throwable {
+        String className = pjp.getTarget().getClass().getSimpleName();
+        String methodName = pjp.getSignature().getName();
+        String metric = className + "." + methodName;
+        
+        Timer.Sample sample = Timer.start(meterRegistry);
+        boolean success = false;
+        
+        try {
+            Object result = pjp.proceed();
+            success = true;
+            return result;
+        } finally {
+            sample.stop(
+                Timer.builder("service.method.duration")
+                    .tag("class", className)
+                    .tag("method", methodName)
+                    .tag("success", String.valueOf(success))
+                    .register(meterRegistry)
+            );
+            
+            // Warn on slow methods
+            // ...
+        }
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Retry Mechanism with @Around</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Production Retry with Exponential Backoff</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class RetryAspect {
+
+    @Around("@annotation(retryable)")
+    public Object retry(ProceedingJoinPoint pjp, Retryable retryable) throws Throwable {
+        int maxAttempts = retryable.maxAttempts();      // From annotation
+        long delayMs = retryable.delayMs();             // Initial delay
+        Class&lt;?&gt;[] retryOn = retryable.retryOn();      // Exception types
+
+        Throwable lastException = null;
+
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                return pjp.proceed();
+            } catch (Throwable ex) {
+                boolean shouldRetry = Arrays.stream(retryOn)
+                    .anyMatch(c -> c.isAssignableFrom(ex.getClass()));
+
+                if (!shouldRetry || attempt >= maxAttempts) throw ex;
+
+                lastException = ex;
+                long wait = delayMs * (long) Math.pow(2, attempt - 1); // Exponential backoff
+                log.warn("[Retry {}/{}] {} failed: {}. Retrying in {}ms...",
+                    attempt, maxAttempts,
+                    pjp.getSignature().getName(),
+                    ex.getMessage(), wait);
+                
+                Thread.sleep(wait);
+            }
+        }
+        throw lastException;
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Security Gate with @Around</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Dynamic Security Check</div>
+  <pre><code class="language-java">@Around("@annotation(adminOnly)")
+public Object checkAdminAccess(ProceedingJoinPoint pjp, AdminOnly adminOnly) throws Throwable {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    
+    if (auth == null || !auth.isAuthenticated()) {
+        throw new AuthenticationException("Not authenticated");
+    }
+    
+    String requiredRole = adminOnly.role(); // e.g. "ADMIN", "SUPERUSER"
+    boolean hasRole = auth.getAuthorities().stream()
+        .anyMatch(a -> a.getAuthority().equals("ROLE_" + requiredRole));
+    
+    if (!hasRole) {
+        String user = auth.getName();
+        String method = pjp.getSignature().toShortString();
+        log.warn("[SECURITY] User '{}' denied access to {}", user, method);
+        throw new AccessDeniedException("Requires role: " + requiredRole);
+    }
+    
+    return pjp.proceed(); // Authorized — proceed
+}</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 15 ═══ -->
+<section class="toc-section" id="s15">
+<h2 class="section-title"><span class="num">§ 15</span>Custom Annotations with AOP</h2>
+
+<p>Custom annotations combined with AOP is one of the most powerful patterns in Spring. You define a clean annotation, apply it to your methods, and the aspect handles everything. The calling code stays clean.</p>
+
+<h3 class="sub-title">@LogExecutionTime</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Step 1 — Create the Annotation</div>
+  <pre><code class="language-java">package com.example.annotation;
+
+import java.lang.annotation.*;
+
+@Target(ElementType.METHOD)       // Can be applied to methods
+@Retention(RetentionPolicy.RUNTIME) // Available at runtime for AOP
+@Documented
+public @interface LogExecutionTime {
+    String value() default ""; // Optional description
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Step 2 — Create the Aspect</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class ExecutionTimeAspect {
+
+    @Around("@annotation(logExecutionTime)")
+    public Object logExecutionTime(ProceedingJoinPoint pjp,
+                                   LogExecutionTime logExecutionTime) throws Throwable {
+        long start = System.currentTimeMillis();
+        String label = logExecutionTime.value().isEmpty()
+            ? pjp.getSignature().toShortString()
+            : logExecutionTime.value();
+        
+        try {
+            Object result = pjp.proceed();
+            long elapsed = System.currentTimeMillis() - start;
+            log.info("[TIME] '{}' completed in {} ms", label, elapsed);
+            
+            // Alert if slow
+            if (elapsed > 1000) {
+                log.warn("[SLOW] '{}' took {}ms — performance review needed!", label, elapsed);
+            }
+            return result;
+        } catch (Exception ex) {
+            long elapsed = System.currentTimeMillis() - start;
+            log.error("[TIME] '{}' failed after {}ms", label, elapsed);
+            throw ex;
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Step 3 — Use It Anywhere</div>
+  <pre><code class="language-java">@Service
+public class ReportService {
+
+    @LogExecutionTime("Monthly Report Generation")
+    public Report generateMonthlyReport(int month, int year) {
+        // Heavy business logic — no timing code needed here!
+        return reportBuilder.build(month, year);
+    }
+
+    @LogExecutionTime // Uses method signature as label
+    public List&lt;User&gt; getAllUsers() {
+        return userRepository.findAll();
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">@AdminOnly — Role-Based Access Control</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@AdminOnly Annotation + Aspect</div>
+  <pre><code class="language-java">// Annotation
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AdminOnly {
+    String role() default "ADMIN";
+    String message() default "Admin access required";
+}
+
+// Aspect
+@Aspect
+@Component
+@Slf4j
+public class SecurityAspect {
+
+    @Before("@annotation(adminOnly)")
+    public void enforceAdminAccess(JoinPoint jp, AdminOnly adminOnly) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        
+        String requiredRole = "ROLE_" + adminOnly.role();
+        boolean hasRole = auth != null &amp;&amp; auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals(requiredRole));
+        
+        if (!hasRole) {
+            throw new AccessDeniedException(adminOnly.message());
+        }
+    }
+}
+
+// Usage
+@Service
+public class UserAdminService {
+
+    @AdminOnly  // Only ROLE_ADMIN can call this
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    @AdminOnly(role = "SUPERUSER", message = "Only superusers can export data")
+    public byte[] exportAllUserData() {
+        return dataExporter.exportAll();
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">@RateLimit — API Rate Limiting</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Custom Rate Limiting Annotation</div>
+  <pre><code class="language-java">@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RateLimit {
+    int maxRequests() default 100;
+    int windowSeconds() default 60;
+    String keyPrefix() default "";
+}
+
+@Aspect
+@Component
+@Slf4j
+public class RateLimitAspect {
+
+    @Autowired
+    private RedisTemplate&lt;String, Integer&gt; redis;
+
+    @Around("@annotation(rateLimit)")
+    public Object enforceRateLimit(ProceedingJoinPoint pjp, RateLimit rateLimit) throws Throwable {
+        String clientIp = RequestContextHolder.getHttpServletRequest().getRemoteAddr();
+        String key = rateLimit.keyPrefix() + ":" + clientIp;
+        
+        Integer count = redis.opsForValue().increment(key);
+        if (count == 1) {
+            redis.expire(key, rateLimit.windowSeconds(), TimeUnit.SECONDS);
+        }
+        
+        if (count > rateLimit.maxRequests()) {
+            throw new RateLimitExceededException("Rate limit: " + rateLimit.maxRequests() 
+                + " requests per " + rateLimit.windowSeconds() + "s");
+        }
+        
+        return pjp.proceed();
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 16 ═══ -->
+<section class="toc-section" id="s16">
+<h2 class="section-title"><span class="num">§ 16</span>Exception Handling with AOP</h2>
+
+<p>AOP gives you a global exception monitoring layer. Instead of sprinkling try-catch blocks for monitoring/alerting throughout your app, centralize it in one aspect.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Global Exception Monitor — Production Grade</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class GlobalExceptionMonitorAspect {
+
+    @Autowired
+    private AlertingService alertingService;
+
+    @Autowired
+    private MetricsService metricsService;
+
+    // ─── Monitor ALL application exceptions ───
+    @AfterThrowing(
+        pointcut = "within(com.example..*) &amp;&amp; !within(com.example.aspect..*)",
+        throwing = "ex"
+    )
+    public void monitorException(JoinPoint jp, Throwable ex) {
+        String location = jp.getSignature().toShortString();
+        String exType = ex.getClass().getSimpleName();
+        
+        // Track metrics
+        metricsService.incrementCounter("exceptions", "type", exType, "location", location);
+        
+        // Classify and handle
+        if (ex instanceof BusinessException) {
+            // Expected business exceptions — info level only
+            log.info("[BIZ-EX] {} in {}: {}", exType, location, ex.getMessage());
+        } else if (ex instanceof DatabaseException || ex instanceof DataAccessException) {
+            // Database errors — error + alert
+            log.error("[DB-EX] {} in {}: {}", exType, location, ex.getMessage(), ex);
+            alertingService.alert("DATABASE_ERROR", location, ex);
+        } else if (ex instanceof RuntimeException) {
+            // Unexpected runtime errors — error + alert
+            log.error("[RUNTIME-EX] {} in {}: {}", exType, location, ex.getMessage(), ex);
+            alertingService.alert("RUNTIME_ERROR", location, ex);
+        }
+    }
+    
+    // ─── Track Payment-specific failures separately ───
+    @AfterThrowing(
+        pointcut = "execution(* com.example.service.PaymentService.*(..))",
+        throwing = "ex"
+    )
+    public void monitorPaymentFailure(JoinPoint jp, Exception ex) {
+        String method = jp.getSignature().getName();
+        Object[] args = jp.getArgs();
+        
+        log.error("[PAYMENT-FAILURE] Method: {}, Args: {}, Error: {}", 
+            method, Arrays.toString(args), ex.getMessage());
+        
+        // High-priority alert for payment failures
+        alertingService.sendUrgentAlert("PAYMENT_FAILURE", Map.of(
+            "method", method,
+            "error", ex.getMessage(),
+            "timestamp", Instant.now().toString()
+        ));
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 17 ═══ -->
+<section class="toc-section" id="s17">
+<h2 class="section-title"><span class="num">§ 17</span>Complete Logging Framework with AOP</h2>
+
+<p>Let's build a mini logging framework that handles all logging concerns from one aspect. This is the kind of production code you'd find in real microservices.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>ApplicationLoggingAspect.java — Full Implementation</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class ApplicationLoggingAspect {
+
+    // ─── Pointcuts ───
+    @Pointcut("within(com.example.service..*)")
+    public void serviceLayer() {}
+
+    @Pointcut("within(com.example.controller..*)")
+    public void controllerLayer() {}
+
+    @Pointcut("within(com.example.repository..*)")
+    public void repositoryLayer() {}
+
+    // ─── 1. Request Logging (Controller Layer) ───
+    @Before("controllerLayer()")
+    public void logRequest(JoinPoint jp) {
+        HttpServletRequest req = ((ServletRequestAttributes)
+            RequestContextHolder.getRequestAttributes()).getRequest();
+        
+        MDC.put("requestId", UUID.randomUUID().toString().substring(0, 8));
+        MDC.put("clientIp", req.getRemoteAddr());
+        MDC.put("httpMethod", req.getMethod());
+        MDC.put("uri", req.getRequestURI());
+        
+        log.info("[REQUEST] {} {} — Controller: {}.{}()",
+            req.getMethod(), req.getRequestURI(),
+            jp.getTarget().getClass().getSimpleName(),
+            jp.getSignature().getName());
+    }
+
+    @After("controllerLayer()")
+    public void clearRequestContext() {
+        MDC.clear();
+    }
+
+    // ─── 2. Service Layer Tracing ───
+    @Around("serviceLayer()")
+    public Object traceServiceCall(ProceedingJoinPoint pjp) throws Throwable {
+        MethodSignature sig = (MethodSignature) pjp.getSignature();
+        String methodRef = pjp.getTarget().getClass().getSimpleName()
+            + "." + sig.getName();
+        
+        log.debug("[SERVICE →] {}", methodRef);
+        long start = System.nanoTime();
+        
+        try {
+            Object result = pjp.proceed();
+            long ms = (System.nanoTime() - start) / 1_000_000;
+            log.debug("[SERVICE ←] {} completed in {}ms", methodRef, ms);
+            return result;
+        } catch (Exception ex) {
+            long ms = (System.nanoTime() - start) / 1_000_000;
+            log.error("[SERVICE ✗] {} failed in {}ms: {}", methodRef, ms, ex.getMessage());
+            throw ex;
+        }
+    }
+
+    // ─── 3. Repository Query Logging ───
+    @Around("repositoryLayer()")
+    public Object traceRepositoryCall(ProceedingJoinPoint pjp) throws Throwable {
+        String method = pjp.getSignature().getName();
+        String repo = pjp.getTarget().getClass().getSimpleName();
+        
+        long start = System.nanoTime();
+        Object result = pjp.proceed();
+        long ms = (System.nanoTime() - start) / 1_000_000;
+        
+        if (ms > 200) {
+            log.warn("[SLOW-QUERY] {}.{}() took {}ms", repo, method, ms);
+        } else {
+            log.debug("[REPO] {}.{}() → {}ms", repo, method, ms);
+        }
+        return result;
+    }
+
+    // ─── 4. Error Logging (All layers) ───
+    @AfterThrowing(
+        pointcut = "serviceLayer() || controllerLayer()",
+        throwing = "ex"
+    )
+    public void logError(JoinPoint jp, Throwable ex) {
+        String location = jp.getSignature().toShortString();
+        log.error("[ERROR] Exception in {}: [{}] {}",
+            location, ex.getClass().getSimpleName(), ex.getMessage());
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Sample Output</h3>
+<div class="console">
+<span class="c-info">INFO</span>  [requestId=a3f9b1c2] [REQUEST] POST /api/users — Controller: UserController.createUser()<br>
+<span class="c-dim">DEBUG</span> [requestId=a3f9b1c2] [SERVICE →] UserService.createUser<br>
+<span class="c-dim">DEBUG</span> [requestId=a3f9b1c2] [REPO] UserRepositoryImpl.save() → 12ms<br>
+<span class="c-dim">DEBUG</span> [requestId=a3f9b1c2] [SERVICE ←] UserService.createUser completed in 15ms<br>
+<br>
+<span class="c-warn">WARN</span>  [requestId=b7e2d4f1] [SLOW-QUERY] ProductRepository.findByCategory() took 432ms<br>
+<span class="c-err">ERROR</span> [requestId=c9a1e3b0] [ERROR] Exception in UserService.findById(..): [UserNotFoundException] User not found: 99
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 18 ═══ -->
+<section class="toc-section" id="s18">
+<h2 class="section-title"><span class="num">§ 18</span>@Transactional — AOP Under the Hood</h2>
+
+<p>When you add <code>@Transactional</code> to a method, Spring uses AOP <em>internally</em> to wrap it with transaction management. Understanding this explains both how transactions work and common transaction bugs.</p>
+
+<div class="diagram">
+  <div class="diagram-title">@Transactional AOP Flow</div>
+  <div class="flow-row">
+    <div class="flow-box">Caller calls<br>service.save()</div>
+  </div>
+  <div class="flow-down">↓ goes to proxy</div>
+  <div class="flow-row">
+    <div class="flow-box accent2">TransactionInterceptor<br><span style="font-size:11px">(Spring's internal Aspect)</span></div>
+  </div>
+  <div class="flow-down">↓</div>
+  <div class="flow-row">
+    <div class="flow-box accent">Open Transaction<br>BEGIN</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">Real service.save()<br>executes</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent3">COMMIT<br>or ROLLBACK</div>
+  </div>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>What Spring Does Internally for @Transactional</div>
+  <pre><code class="language-java">// What YOU write:
+@Service
+public class UserService {
+    @Transactional
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+}
+
+// What Spring GENERATES (conceptually):
+public class UserService$$Proxy extends UserService {
+    @Override
+    public User createUser(User user) {
+        TransactionStatus tx = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            User result = super.createUser(user); // Calls your real code
+            transactionManager.commit(tx);         // Success → commit
+            return result;
+        } catch (RuntimeException ex) {
+            transactionManager.rollback(tx);       // Failure → rollback
+            throw ex;
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ The Self-Invocation Transaction Bug</div>
+  Because <code>@Transactional</code> is proxy-based, calling a <code>@Transactional</code> method from within the <em>same class</em> bypasses the proxy and skips the transaction!
+  <div class="code-block" style="margin-top:10px">
+    <div class="code-label"><span class="dot"></span>The Self-Invocation Bug</div>
+    <pre><code class="language-java">@Service
+public class OrderService {
+
+    @Transactional
+    public void createOrder(Order order) {
+        // This calls the REAL method, NOT the proxy!
+        // @Transactional on processPayment is IGNORED
+        this.processPayment(order.getPayment()); // ❌ WRONG
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void processPayment(Payment payment) {
+        // This thinks it's in a new transaction — IT'S NOT
+        paymentGateway.charge(payment);
+    }
+}
+
+// FIX: Inject self-proxy or extract to separate bean
+@Service
+public class OrderService {
+
+    @Autowired
+    private OrderService self; // Inject the proxy version of self!
+
+    public void createOrder(Order order) {
+        self.processPayment(order.getPayment()); // ✅ Goes through proxy
+    }
+}</code></pre>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTIONS 19-20 ═══ -->
+<section class="toc-section" id="s19">
+<h2 class="section-title"><span class="num">§ 19</span>Spring Security & Caching — AOP Inside</h2>
+
+<h3 class="sub-title">Spring Security Method Security</h3>
+<p>Spring Security's method-level security annotations (<code>@PreAuthorize</code>, <code>@PostAuthorize</code>, <code>@Secured</code>) are powered entirely by AOP. When you enable <code>@EnableMethodSecurity</code>, Spring registers security-specific aspects.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>How @PreAuthorize Works Internally</div>
+  <pre><code class="language-java">// Your code
+@Service
+public class DocumentService {
+    @PreAuthorize("hasRole('EDITOR') and #doc.ownerId == authentication.principal.id")
+    public Document updateDocument(Document doc) { ... }
+}
+
+// Spring Security's internal aspect (simplified):
+// MethodSecurityInterceptor (an AOP MethodInterceptor)
+// 1. Evaluate SpEL expression from @PreAuthorize
+// 2. If false → throw AccessDeniedException
+// 3. If true → proceed with method
+// 4. @PostAuthorize runs after method with return value in SpEL context</code></pre>
+</div>
+
+<h3 class="sub-title">@Cacheable — AOP-Powered Caching</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>How @Cacheable Works (AOP Internals)</div>
+  <pre><code class="language-java">// What you write:
+@Service
+public class ProductService {
+    @Cacheable(value = "products", key = "#id")
+    public Product getProduct(Long id) {
+        return repository.findById(id).orElseThrow(); // DB hit only on cache miss
+    }
+}
+
+// What Spring does internally (via CacheInterceptor aspect):
+// 1. Generate cache key: "products::42"
+// 2. Check cache: is "products::42" present?
+//    YES → return cached value immediately (method NOT called)
+//    NO  → call the method, store result, return it
+
+// @CachePut always calls method AND updates cache
+// @CacheEvict removes from cache (on delete operations)
+
+@Service
+public class ProductService {
+    @Cacheable(value = "products", key = "#id",
+               condition = "#id > 0",              // Only cache valid IDs
+               unless = "#result == null")         // Don't cache null results
+    public Product getProduct(Long id) { ... }
+
+    @CachePut(value = "products", key = "#product.id")
+    public Product updateProduct(Product product) { ... }
+
+    @CacheEvict(value = "products", key = "#id")
+    public void deleteProduct(Long id) { ... }
+}</code></pre>
+</div>
+</section>
+
+<section class="toc-section" id="s20">
+<h2 class="section-title"><span class="num">§ 20</span>@Async — AOP-Powered Threading</h2>
+
+<p><code>@Async</code> is also powered by AOP. When you annotate a method, Spring's <code>AsyncExecutionInterceptor</code> wraps the call and submits it to a <code>TaskExecutor</code> thread pool.</p>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@Async Internals + Configuration</div>
+  <pre><code class="language-java">// Enable async support
+@SpringBootApplication
+@EnableAsync
+public class Application { }
+
+// Configuration
+@Configuration
+@EnableAsync
+public class AsyncConfig implements AsyncConfigurer {
+
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("async-");
+        executor.initialize();
+        return executor;
+    }
+}
+
+// Usage
+@Service
+public class NotificationService {
+
+    @Async // AOP proxy runs this in a thread pool
+    public CompletableFuture&lt;Void&gt; sendEmail(String to, String body) {
+        // Runs in a background thread
+        emailSender.send(to, body);
+        return CompletableFuture.completedFuture(null);
+    }
+}
+
+// Internal Flow:
+// 1. Caller calls sendEmail() on proxy
+// 2. AsyncExecutionInterceptor intercepts
+// 3. Wraps method call in Callable/Runnable
+// 4. Submits to TaskExecutor thread pool
+// 5. Returns CompletableFuture immediately to caller
+// 6. Method runs asynchronously in background thread</code></pre>
+</div>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ @Async Self-Invocation Bug</div>
+  Same as <code>@Transactional</code> — calling an <code>@Async</code> method from within the same class bypasses the proxy and runs synchronously. Always inject the bean or call from a different class.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 21 ═══ -->
+<section class="toc-section" id="s21">
+<h2 class="section-title"><span class="num">§ 21</span>Common Mistakes in Spring AOP</h2>
+
+<h3 class="sub-title">Mistake 1: Self-Invocation</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Self-Invocation — AOP is Bypassed</div>
+  <pre><code class="language-java">// ❌ BROKEN — self-invocation bypasses proxy
+@Service
+public class UserService {
+    @LogExecutionTime
+    public void doA() {
+        this.doB(); // Calls real object directly — @LogExecutionTime on doB() is IGNORED
+    }
+
+    @LogExecutionTime
+    public void doB() { ... }
+}
+
+// ✅ FIX 1: Use ApplicationContext to get the proxy
+@Service
+public class UserService implements ApplicationContextAware {
+    private ApplicationContext ctx;
+    
+    public void doA() {
+        ctx.getBean(UserService.class).doB(); // Gets the proxy
+    }
+}
+
+// ✅ FIX 2: Inject self (Spring 4.3+)
+@Service
+public class UserService {
+    @Autowired
+    @Lazy // Important to avoid circular dependency
+    private UserService self;
+
+    public void doA() {
+        self.doB(); // Goes through proxy
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Mistake 2: Final Methods</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Final Method — CGLIB Cannot Override</div>
+  <pre><code class="language-java">// ❌ BROKEN — CGLIB cannot subclass and override final methods
+@Service
+public class PaymentService {
+    @Transactional // IGNORED! Final method cannot be proxied
+    public final void processPayment(Long amount) { ... }
+}
+
+// ✅ FIX: Remove 'final'
+@Service
+public class PaymentService {
+    @Transactional
+    public void processPayment(Long amount) { ... } // Works!
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Mistake 3: Private Methods</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Private Method — Neither Proxy Can Intercept</div>
+  <pre><code class="language-java">// ❌ BROKEN — Pointcut matches, but proxy can't intercept private methods
+@Aspect
+@Component
+public class LoggingAspect {
+    @Before("execution(* com.example.service.*.*(..))")
+    public void log(JoinPoint jp) { ... }
+}
+
+@Service
+public class UserService {
+    private void privateHelperMethod() { ... } // AOP NEVER fires for this
+}
+
+// ✅ FIX: Make methods package-private or public if they need AOP
+// Or refactor private helper into a separate bean</code></pre>
+</div>
+
+<h3 class="sub-title">Mistake 4: Missing @Component on Aspect</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Aspect Not Registered as Bean</div>
+  <pre><code class="language-java">// ❌ BROKEN — @Aspect without @Component
+@Aspect
+// Missing @Component!
+public class LoggingAspect {
+    @Before("execution(* com.example.service.*.*(..))")
+    public void log() { ... } // Never fires — aspect not in Spring context
+}
+
+// ✅ FIX
+@Aspect
+@Component // Must register as a Spring Bean!
+public class LoggingAspect { ... }</code></pre>
+</div>
+
+<h3 class="sub-title">Mistake 5: Wrong Pointcut — Forgetting Subpackages</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Pointcut Not Matching Expected Methods</div>
+  <pre><code class="language-java">// ❌ Misses com.example.service.user.UserService
+@Pointcut("execution(* com.example.service.*.*(..))") // Single * = one package level
+
+// ✅ Matches com.example.service.ANY.DEPTH.ClassName
+@Pointcut("execution(* com.example.service..*.*(..))") // .. = any sub-packages</code></pre>
+</div>
+
+<h3 class="sub-title">Mistake 6: Not Returning proceed() Result</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Silently Discarding Return Values</div>
+  <pre><code class="language-java">// ❌ BROKEN — returns null for all methods!
+@Around("execution(* com.example.service.*.*(..))")
+public Object trace(ProceedingJoinPoint pjp) throws Throwable {
+    pjp.proceed(); // Return value discarded!
+    return null;   // All method callers get null
+}
+
+// ✅ FIX
+@Around("execution(* com.example.service.*.*(..))")
+public Object trace(ProceedingJoinPoint pjp) throws Throwable {
+    Object result = pjp.proceed();
+    return result; // Always return the result!
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Mistake 7: Swallowing Exceptions</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Silent Exception Swallowing</div>
+  <pre><code class="language-java">// ❌ BROKEN — hides all exceptions from callers
+@Around("execution(* com.example.service.*.*(..))")
+public Object safeWrapper(ProceedingJoinPoint pjp) throws Throwable {
+    try {
+        return pjp.proceed();
+    } catch (Exception ex) {
+        log.error("Error: " + ex.getMessage());
+        return null; // Exception swallowed! Caller thinks it succeeded
+    }
+}
+
+// ✅ FIX — log AND rethrow
+@Around("...")
+public Object safeWrapper(ProceedingJoinPoint pjp) throws Throwable {
+    try {
+        return pjp.proceed();
+    } catch (Exception ex) {
+        log.error("Error: " + ex.getMessage());
+        throw ex; // Rethrow!
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 22 ═══ -->
+<section class="toc-section" id="s22">
+<h2 class="section-title"><span class="num">§ 22</span>Performance Considerations</h2>
+
+<p>AOP adds overhead. Each proxied method call goes through the proxy mechanism. In most applications this is negligible (microseconds), but improper use can cause real problems.</p>
+
+<h3 class="sub-title">Proxy Overhead Breakdown</h3>
+<ul>
+  <li><strong>JDK Proxy call overhead</strong>: ~0.5–2μs per method call</li>
+  <li><strong>CGLIB Proxy call overhead</strong>: ~0.2–1μs per method call (faster invocation)</li>
+  <li><strong>Pointcut matching</strong>: Cached after first evaluation — negligible</li>
+  <li><strong>Heavy advice execution</strong>: Depends entirely on what you do inside advice</li>
+</ul>
+
+<div class="callout warn">
+  <div class="callout-title">⚠️ Performance Anti-Patterns</div>
+  <ul style="margin:6px 0 0 16px">
+    <li style="margin-bottom:6px"><strong>Broad pointcuts on hot paths</strong>: <code>execution(* *.*(..))</code> matches everything including framework internals</li>
+    <li style="margin-bottom:6px"><strong>Expensive operations in @Before/@After</strong>: Database calls, HTTP requests, synchronous I/O</li>
+    <li style="margin-bottom:6px"><strong>Unnecessary @Around</strong>: Use the lightest advice type that meets your need</li>
+    <li><strong>Serializing large objects in logging advice</strong>: <code>args.toString()</code> on a 100KB object in every method</li>
+  </ul>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Performance Best Practices</div>
+  <pre><code class="language-java">// ✅ Be specific — narrow pointcuts
+@Pointcut("execution(* com.example.service.*.*(..))")
+// NOT: execution(* *.*(..))
+
+// ✅ Use @annotation for opt-in performance monitoring
+@Around("@annotation(com.example.annotation.Monitored)")
+// Only annotated methods are intercepted
+
+// ✅ Use log level checks to avoid expensive string formatting
+@Before("serviceLayer()")
+public void logEntry(JoinPoint jp) {
+    if (log.isDebugEnabled()) { // Check BEFORE building the string
+        log.debug("Entering: {}", jp.getSignature().toShortString());
+    }
+}
+
+// ✅ Async advice for non-critical operations
+@AfterReturning("serviceLayer()")
+public void recordMetricsAsync(JoinPoint jp) {
+    // Submit to queue, don't block the main thread
+    metricsQueue.offer(new MetricEvent(jp.getSignature().getName()));
+}
+
+// ✅ Use @After instead of @Around when you don't need the return value
+// @After is lighter-weight than @Around</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 23 ═══ -->
+<section class="toc-section" id="s23">
+<h2 class="section-title"><span class="num">§ 23</span>Real Project Architecture</h2>
+
+<h3 class="sub-title">Where AOP Fits in Enterprise Applications</h3>
+
+<div class="bp">
+  <div class="bp-icon">📝</div>
+  <div class="bp-text"><strong>Logging & Tracing</strong>
+  Centralized logging of all service/controller calls with correlation IDs, execution times, and structured output. AOP is perfect — logging is the canonical cross-cutting concern.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">📊</div>
+  <div class="bp-text"><strong>Metrics & Monitoring</strong>
+  Automatically push execution time, call counts, and error rates to Micrometer/Prometheus. Applied globally without touching business code.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">🔒</div>
+  <div class="bp-text"><strong>Security & Authorization</strong>
+  Custom annotations like <code>@AdminOnly</code>, <code>@RateLimit</code>, <code>@RequiresPermission</code> that enforce access control declaratively.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">📋</div>
+  <div class="bp-text"><strong>Audit Trails</strong>
+  Record who did what and when — e.g., "admin john@co.com deleted user 42 at 14:23:01". AOP can capture this uniformly across all mutation operations.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">💾</div>
+  <div class="bp-text"><strong>Caching</strong>
+  <code>@Cacheable</code>, <code>@CachePut</code>, <code>@CacheEvict</code> are Spring's own AOP-based caching. Build custom caching strategies the same way.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">💰</div>
+  <div class="bp-text"><strong>Transaction Management</strong>
+  <code>@Transactional</code> is AOP. You're already using it. Understanding the proxy model prevents self-invocation bugs and nested transaction issues.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">🔁</div>
+  <div class="bp-text"><strong>Retry Logic</strong>
+  Automatic retry with exponential backoff on transient failures (network issues, deadlocks). Applied via <code>@Retryable</code> annotation-based AOP.</div>
+</div>
+
+<h3 class="sub-title">Where NOT to Use AOP</h3>
+<div class="callout warn">
+  <div class="callout-title">❌ Avoid AOP for These</div>
+  <ul style="margin:6px 0 0 16px">
+    <li style="margin-bottom:6px"><strong>Business logic</strong> — Never put core business rules in an Aspect. Aspects are for infrastructure concerns.</li>
+    <li style="margin-bottom:6px"><strong>Data transformation</strong> — Mapping DTOs, formatting responses — keep in service layer.</li>
+    <li style="margin-bottom:6px"><strong>Complex conditional logic</strong> — If you need complex if/else branching, it belongs in code, not an aspect.</li>
+    <li style="margin-bottom:6px"><strong>Private API concerns</strong> — AOP can't intercept private methods. If you need to, rethink the design.</li>
+    <li><strong>Performance-critical hot paths</strong> — Avoid broad AOP on methods called millions of times per second.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 24 ═══ -->
+<section class="toc-section" id="s24">
+<h2 class="section-title"><span class="num">§ 24</span>Spring AOP vs AspectJ</h2>
+
+<table>
+  <thead>
+    <tr><th>Feature</th><th>Spring AOP</th><th>AspectJ</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Weaving type</td><td>Runtime (proxy-based)</td><td>Compile-time, Post-compile, Load-time</td></tr>
+    <tr><td>JoinPoint types</td><td>Method execution only</td><td>Method, field, constructor, static initializer, etc.</td></tr>
+    <tr><td>Performance</td><td>Slight proxy overhead</td><td>No proxy overhead (code woven directly)</td></tr>
+    <tr><td>Setup complexity</td><td>Simple — just add starter</td><td>Requires compiler plugin or agent</td></tr>
+    <tr><td>Private methods</td><td><span class="cross">✗ Not supported</span></td><td><span class="check">✓ Supported</span></td></tr>
+    <tr><td>Final classes</td><td><span class="cross">✗ Not supported (CGLIB)</span></td><td><span class="check">✓ Supported</span></td></tr>
+    <tr><td>Spring integration</td><td><span class="check">✓ Native</span></td><td>Possible but complex</td></tr>
+    <tr><td>Use for</td><td>90% of enterprise needs</td><td>Low-level framework development</td></tr>
+    <tr><td>Learning curve</td><td>Low-Medium</td><td>High</td></tr>
+    <tr><td>Expression syntax</td><td>AspectJ subset</td><td>Full AspectJ</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub-title">Weaving Types Explained</h3>
+<div class="bp">
+  <div class="bp-icon">⏰</div>
+  <div class="bp-text"><strong>Runtime Weaving (Spring AOP)</strong>
+  Proxies are created at application startup. No bytecode manipulation. Easy to set up. Most flexible for Spring applications. Slight overhead per call.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">🔨</div>
+  <div class="bp-text"><strong>Compile-Time Weaving (AspectJ)</strong>
+  Aspect code is woven into class files during compilation. Requires AspectJ compiler (ajc). Maximum performance — no proxy overhead. Used in high-performance frameworks.</div>
+</div>
+<div class="bp">
+  <div class="bp-icon">📦</div>
+  <div class="bp-text"><strong>Load-Time Weaving (AspectJ LTW)</strong>
+  Bytecode is modified as classes are loaded by the JVM. Uses a Java agent. Balance between compile-time complexity and runtime flexibility.</div>
+</div>
+
+<div class="callout success">
+  <div class="callout-title">✅ When to Choose What</div>
+  <strong>Use Spring AOP</strong> for 95%+ of enterprise applications. It's simpler, integrates naturally with Spring, and handles all common cross-cutting concerns. <strong>Use AspectJ</strong> only when you need to intercept private/static methods, field access, or need zero proxy overhead in performance-critical paths.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 25 ═══ -->
+<section class="toc-section" id="s25">
+<h2 class="section-title"><span class="num">§ 25</span>Interview Questions & Answers</h2>
+
+<h3 class="sub-title">Beginner Level</h3>
+
+<div class="iq">
+  <div class="q"><span class="badge beginner">Beginner</span>What is AOP and why is it used?</div>
+  <div class="a">AOP (Aspect-Oriented Programming) is a paradigm for separating cross-cutting concerns from business logic. It's used because behaviors like logging, security, and transactions appear across many unrelated classes. Without AOP, this code is duplicated everywhere. AOP centralizes these concerns in Aspects, keeping business classes clean and focused.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge beginner">Beginner</span>What is a cross-cutting concern? Give examples.</div>
+  <div class="a">A cross-cutting concern is functionality that spans multiple application modules and doesn't cleanly fit into a single class. Examples: Logging (needed in every service), Transaction management (needed in every DB operation), Security/authentication (needed at every endpoint), Caching (applicable to many service methods), Auditing (track changes across entities), Performance monitoring (measure every operation).</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge beginner">Beginner</span>Explain the difference between JoinPoint and Pointcut.</div>
+  <div class="a">A <strong>JoinPoint</strong> is a specific point in program execution (in Spring AOP, always a method execution) where advice <em>could</em> be applied. Think of it as a potential interception point. A <strong>Pointcut</strong> is an expression that selects which JoinPoints will actually have advice applied. JoinPoint = every method call that exists. Pointcut = the filter that picks which ones to intercept.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge beginner">Beginner</span>What annotations do you need to create an Aspect?</div>
+  <div class="a"><code>@Aspect</code> marks the class as containing AOP advice logic. <code>@Component</code> (or <code>@Bean</code>) registers it as a Spring-managed bean. Both are required. <code>@Aspect</code> alone is not enough — Spring won't find the class without <code>@Component</code>.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge beginner">Beginner</span>What are the 5 types of advice?</div>
+  <div class="a"><code>@Before</code> — Runs before the method. Cannot modify return value. <code>@After</code> — Runs after the method, whether success or exception (like finally). <code>@AfterReturning</code> — Runs only on successful return. Can access the return value. <code>@AfterThrowing</code> — Runs only when an exception is thrown. Can access the exception. <code>@Around</code> — Wraps the entire method. Full control: can skip execution, modify args/return value, handle exceptions.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge beginner">Beginner</span>What is Weaving?</div>
+  <div class="a">Weaving is the process of applying aspects to target objects to create advised proxy objects. Spring AOP does this at runtime using JDK Dynamic Proxies or CGLIB. When the application context starts, Spring identifies beans matched by pointcuts and creates proxy wrappers around them.</div>
+</div>
+
+<h3 class="sub-title">Intermediate Level</h3>
+
+<div class="iq">
+  <div class="q"><span class="badge intermediate">Intermediate</span>What is the difference between JDK Dynamic Proxy and CGLIB?</div>
+  <div class="a">JDK Dynamic Proxy requires the target class to implement at least one interface. It creates a proxy that implements the same interface. CGLIB creates a subclass of the target class and overrides non-final methods. Spring Boot 2.x+ defaults to CGLIB even when interfaces exist. CGLIB cannot proxy final classes or final methods. JDK proxies are interface-bound, so you can only call proxy methods defined in the interface.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge intermediate">Intermediate</span>Explain the execution() pointcut expression syntax.</div>
+  <div class="a">Format: <code>execution([modifiers] [return-type] [declaring-type].[method-name]([params]) [throws])</code>. The <code>*</code> wildcard matches any single element. The <code>..</code> wildcard in params means "zero or more arguments"; in package names it means "this package and all subpackages". Example: <code>execution(public * com.example.service..*.*(..)) </code>matches any public method in any class in the service package or its sub-packages, with any return type and any arguments.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge intermediate">Intermediate</span>What is the self-invocation problem in Spring AOP?</div>
+  <div class="a">When a method in a Spring bean calls another method in the same class using <code>this</code>, it bypasses the proxy. Since AOP intercepts are applied at the proxy level, any advice on the called method is silently skipped. This affects <code>@Transactional</code>, <code>@Async</code>, and all custom AOP. Fix: inject the bean into itself (<code>@Autowired @Lazy private MyService self;</code>) or use <code>ApplicationContext.getBean()</code> to get the proxy version.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge intermediate">Intermediate</span>How does @Transactional work under the hood?</div>
+  <div class="a">@Transactional is implemented as a Spring AOP aspect (specifically a <code>MethodInterceptor</code>). When you annotate a method, Spring creates a proxy. When the method is called, Spring's <code>TransactionInterceptor</code> runs first: opens a transaction (via <code>PlatformTransactionManager</code>), calls the real method, then commits on success or rolls back on <code>RuntimeException</code> (by default). The proxy is why self-invocation breaks transactions.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge intermediate">Intermediate</span>What is the difference between @After and @AfterReturning?</div>
+  <div class="a"><code>@After</code> is the equivalent of a <code>finally</code> block — it runs whether the method succeeded or threw an exception. It cannot access the return value. <code>@AfterReturning</code> only runs when the method completes normally (no exception). It can access the return value via the <code>returning</code> attribute. Use <code>@After</code> for cleanup that must always happen. Use <code>@AfterReturning</code> when you need to inspect or react to the successful result.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge intermediate">Intermediate</span>Why must @Around advice declare 'throws Throwable'?</div>
+  <div class="a">Because <code>pjp.proceed()</code> can throw any checked or unchecked exception from the target method. Since you're wrapping the method call entirely, you must be able to propagate any exception the target might throw. Declaring <code>throws Throwable</code> (or a sufficiently broad exception) allows the compiler to accept the <code>pjp.proceed()</code> call and allows you to rethrow without wrapping.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge intermediate">Intermediate</span>Can you apply multiple aspects to the same method? How is the order controlled?</div>
+  <div class="a">Yes. Multiple aspects can match the same JoinPoint. Order is controlled with <code>@Order(n)</code> annotation or by implementing <code>Ordered</code> interface. Lower number = higher priority (runs first in @Before, last in @After). If no order is specified, the order is unspecified and can vary. Best practice: assign explicit @Order to all aspects that might conflict.</div>
+</div>
+
+<h3 class="sub-title">Advanced Level</h3>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>How would you implement a distributed tracing system using AOP?</div>
+  <div class="a">Create an aspect that intercepts all service and controller methods. On entry, check for an incoming trace ID header (X-Trace-ID). If present, store in MDC. If absent, generate a new trace ID. Add this to all outgoing HTTP headers via RestTemplate/WebClient interceptors. The AOP aspect ensures every method execution within a request carries the same trace ID, enabling end-to-end correlation across microservices. This is exactly how Sleuth/Zipkin integration works in Spring.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>What is the difference between Spring AOP and AspectJ? When would you choose AspectJ?</div>
+  <div class="a">Spring AOP uses runtime proxies (JDK or CGLIB) and can only intercept Spring-managed bean method executions. It uses AspectJ annotation syntax but not the full AspectJ engine. AspectJ uses compile-time or load-time weaving, modifying bytecode directly. AspectJ can intercept field access, static methods, constructors, and private methods. Choose AspectJ when: (1) You need to intercept private methods or static methods, (2) You need to advise non-Spring-managed objects, (3) Performance overhead of proxies is unacceptable on a hot path. For most enterprise applications, Spring AOP is sufficient.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>How does @Transactional propagation work with AOP proxies? What happens with REQUIRES_NEW?</div>
+  <div class="a"><code>REQUIRES_NEW</code> suspends the current transaction and starts a completely new one. This works via AOP: the <code>TransactionInterceptor</code> on the inner proxy checks the propagation setting, calls <code>TransactionManager.suspend()</code>, opens a new connection/transaction, calls the method, commits/rolls back the inner transaction, then resumes the outer transaction. If the inner method is called via self-invocation (using <code>this</code>), the proxy is bypassed and REQUIRES_NEW is completely ignored — both methods run in the same transaction. This is one of the most common production bugs in Spring applications.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>Explain how you would implement an idempotency key system using AOP.</div>
+  <div class="a">Create an <code>@Idempotent</code> annotation that takes a key expression (SpEL). The aspect: (1) Extracts the idempotency key from request headers or method args using SpEL evaluation. (2) Checks Redis for a stored result under this key. (3) If found, returns the stored result immediately without calling the method (achieving idempotency). (4) If not found, calls the method, stores the result in Redis with a TTL, and returns it. This pattern is critical for payment and financial APIs where duplicate requests must return the same result without re-executing.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>How does Spring's @EnableAspectJAutoProxy work internally?</div>
+  <div class="a">It registers <code>AnnotationAwareAspectJAutoProxyCreator</code> as a <code>BeanPostProcessor</code> in the Spring context. This BPP runs after every bean is created. For each bean, it checks all registered <code>@Aspect</code> classes to find any pointcuts that match the bean's methods. If a match is found, instead of returning the raw bean, it returns a proxy (JDK or CGLIB) that wraps the bean and applies the matched advice. The proxy is stored in the context, so all <code>@Autowired</code> injections receive the proxy, not the original bean.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>What is the execution order when @Before and @After from multiple aspects fire on the same method?</div>
+  <div class="a">With two aspects A (Order=1) and B (Order=2) on the same method: @Before from A fires first (lower order = outer layer), then @Before from B, then the method executes, then @After from B, then @After from A. This is analogous to nested try-finally blocks: A wraps B wraps the method. The outer aspect's @Before runs first; its @After runs last. This is the "Russian doll" model of AOP advice application.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>Can AOP affect the constructor of a Spring bean? How?</div>
+  <div class="a">Spring AOP cannot intercept constructors because proxies are created <em>after</em> the bean is instantiated. The proxy wraps the existing object — it doesn't replace the constructor. If you need constructor-level interception, you need compile-time or load-time AspectJ weaving. In Spring, constructor-related cross-cutting concerns are typically handled via <code>@PostConstruct</code> for initialization logic, or by abstracting the construction through factory methods that can be proxied.</div>
+</div>
+
+<div class="iq">
+  <div class="q"><span class="badge advanced">Advanced</span>How would you debug when an AOP advice is not firing?</div>
+  <div class="a">Checklist: (1) Is the Aspect class annotated with both <code>@Aspect</code> AND <code>@Component</code>? (2) Is the method <code>private</code>? AOP can't intercept private methods. (3) Is the method <code>final</code>? CGLIB can't override final methods. (4) Is it a self-invocation? <code>this.method()</code> bypasses proxy. (5) Is the pointcut expression correct? Add logging to confirm — temporarily use <code>execution(* *.*(..))</code> to match everything. (6) Is the class managed by Spring? AOP only applies to Spring-managed beans. (7) Enable Spring AOP debug: <code>logging.level.org.springframework.aop=DEBUG</code>.</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 26 ═══ -->
+<section class="toc-section" id="s26">
+<h2 class="section-title"><span class="num">§ 26</span>Mini Project: Smart Logging System</h2>
+
+<h3 class="sub-title">Project Structure</h3>
+<div class="folder-tree">
+src/main/java/com/example/smartlog/<br>
+├── <span class="dir">annotation/</span><br>
+│   ├── <span class="java">Logged.java</span>      <span style="color:var(--text3)">// Custom logging annotation</span><br>
+│   └── <span class="java">NoLog.java</span>       <span style="color:var(--text3)">// Suppress logging on specific methods</span><br>
+├── <span class="dir">aspect/</span><br>
+│   └── <span class="java">SmartLoggingAspect.java</span><br>
+├── <span class="dir">model/</span><br>
+│   └── <span class="java">MethodCallRecord.java</span><br>
+├── <span class="dir">service/</span><br>
+│   └── <span class="java">OrderService.java</span>   <span style="color:var(--text3)">// Example service</span><br>
+└── <span class="java">SmartLogApplication.java</span>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>Logged.java — Annotation with config options</div>
+  <pre><code class="language-java">@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Logged {
+    boolean logArgs() default true;
+    boolean logResult() default true;
+    boolean logTime() default true;
+    String level() default "INFO";
+    long warnThresholdMs() default 500;
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>NoLog.java — Suppress logging</div>
+  <pre><code class="language-java">@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NoLog {}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>MethodCallRecord.java</div>
+  <pre><code class="language-java">@Data
+@Builder
+public class MethodCallRecord {
+    private String traceId;
+    private String className;
+    private String methodName;
+    private Object[] arguments;
+    private Object returnValue;
+    private Throwable exception;
+    private long durationMs;
+    private boolean success;
+    private Instant timestamp;
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>SmartLoggingAspect.java — Full Implementation</div>
+  <pre><code class="language-java">@Aspect
+@Component
+@Slf4j
+public class SmartLoggingAspect {
+
+    @Autowired(required = false)
+    private List&lt;MethodCallListener&gt; listeners = Collections.emptyList();
+
+    // Pointcut 1: @Logged on class or method
+    @Pointcut("@within(com.example.annotation.Logged) || @annotation(com.example.annotation.Logged)")
+    public void loggedMethods() {}
+
+    // Pointcut 2: Exclude @NoLog methods
+    @Pointcut("!@annotation(com.example.annotation.NoLog)")
+    public void notSuppressed() {}
+
+    // Combined
+    @Pointcut("loggedMethods() &amp;&amp; notSuppressed()")
+    public void intercept() {}
+
+    @Around("intercept()")
+    public Object smartLog(ProceedingJoinPoint pjp) throws Throwable {
+        // Get annotation (method-level overrides type-level)
+        MethodSignature sig = (MethodSignature) pjp.getSignature();
+        Method method = sig.getMethod();
+        Logged logged = method.getAnnotation(Logged.class);
+        if (logged == null) {
+            logged = pjp.getTarget().getClass().getAnnotation(Logged.class);
+        }
+
+        String traceId = MDC.get("traceId");
+        if (traceId == null) {
+            traceId = UUID.randomUUID().toString().substring(0, 8);
+            MDC.put("traceId", traceId);
+        }
+
+        String className = pjp.getTarget().getClass().getSimpleName();
+        String methodName = sig.getName();
+        Object[] args = logged.logArgs() ? pjp.getArgs() : new Object[]{"[HIDDEN]"};
+
+        // Build log prefix
+        String prefix = String.format("[%s] %s.%s()", traceId, className, methodName);
+
+        logAtLevel(logged.level(), "→ {} args={}", prefix, formatArgs(args));
+
+        long start = System.nanoTime();
+        MethodCallRecord.MethodCallRecordBuilder record = MethodCallRecord.builder()
+            .traceId(traceId).className(className).methodName(methodName)
+            .arguments(args).timestamp(Instant.now());
+
+        try {
+            Object result = pjp.proceed();
+            long ms = (System.nanoTime() - start) / 1_000_000;
+            Object logResult = logged.logResult() ? result : "[HIDDEN]";
+
+            if (logged.logTime() && ms > logged.warnThresholdMs()) {
+                log.warn("← {} SLOW {}ms result={}", prefix, ms, logResult);
+            } else {
+                logAtLevel(logged.level(), "← {} {}ms result={}", prefix, ms, logResult);
+            }
+
+            record.success(true).returnValue(result).durationMs(ms);
+            notifyListeners(record.build());
+            return result;
+
+        } catch (Exception ex) {
+            long ms = (System.nanoTime() - start) / 1_000_000;
+            log.error("✗ {} FAILED in {}ms: [{}] {}", prefix, ms,
+                ex.getClass().getSimpleName(), ex.getMessage());
+            record.success(false).exception(ex).durationMs(ms);
+            notifyListeners(record.build());
+            throw ex;
+        }
+    }
+
+    private void logAtLevel(String level, String format, Object... args) {
+        switch (level.toUpperCase()) {
+            case "DEBUG": log.debug(format, args); break;
+            case "WARN":  log.warn(format, args); break;
+            case "ERROR": log.error(format, args); break;
+            default:      log.info(format, args);
+        }
+    }
+
+    private String formatArgs(Object[] args) {
+        if (args == null || args.length == 0) return "[]";
+        return Arrays.stream(args)
+            .map(a -> a == null ? "null" : sanitize(a.toString()))
+            .collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    private String sanitize(String s) {
+        // Redact passwords, tokens
+        if (s.toLowerCase().contains("password") || s.toLowerCase().contains("token")) {
+            return "***";
+        }
+        return s.length() > 100 ? s.substring(0, 100) + "..." : s;
+    }
+
+    private void notifyListeners(MethodCallRecord record) {
+        listeners.forEach(l -> {
+            try { l.onMethodCall(record); }
+            catch (Exception e) { log.error("Listener error", e); }
+        });
+    }
+}</code></pre>
+</div>
+
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>OrderService.java — Using the Framework</div>
+  <pre><code class="language-java">@Service
+@Logged(logTime = true, warnThresholdMs = 200) // Applied to ALL methods
+public class OrderService {
+
+    @Logged(logResult = false) // Override: don't log sensitive order details
+    public Order createOrder(Long userId, List&lt;Item&gt; items) {
+        // All the cross-cutting is handled automatically
+        return orderRepository.save(new Order(userId, items));
+    }
+
+    @NoLog // This method won't be logged at all
+    public String getInternalDebugInfo() {
+        return sensitiveInternalData;
+    }
+
+    public List&lt;Order&gt; getOrderHistory(Long userId) {
+        return orderRepository.findByUserId(userId);
+    }
+}</code></pre>
+</div>
+
+<h3 class="sub-title">Sample Output</h3>
+<div class="console">
+<span class="c-info">INFO</span>  [a3f9b1] → OrderService.createOrder() args=[42, [Item{id=1}, Item{id=2}]]<br>
+<span class="c-info">INFO</span>  [a3f9b1] ← OrderService.createOrder() 18ms result=[HIDDEN]<br>
+<br>
+<span class="c-info">INFO</span>  [b7e2c4] → OrderService.getOrderHistory() args=[42]<br>
+<span class="c-warn">WARN</span>  [b7e2c4] ← OrderService.getOrderHistory() SLOW 347ms result=[Order{...}, ...]<br>
+<br>
+<span class="c-err">ERROR</span> [c9d1f3] ✗ OrderService.createOrder() FAILED in 5ms: [ValidationException] Items list empty
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 27 ═══ -->
+<section class="toc-section" id="s27">
+<h2 class="section-title"><span class="num">§ 27</span>Best Practices</h2>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Use the least powerful advice type</strong>
+If you only need to log method entry, use @Before — not @Around. @Around has more power but also more risk (forgetting to return the result, swallowing exceptions). Choose the simplest advice that solves the problem.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Keep pointcuts specific and narrow</strong>
+Avoid <code>execution(* *.*(..))</code>. Use package-specific expressions. Broad pointcuts can inadvertently intercept Spring internals, framework beans, and cause performance issues or subtle bugs.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Name and reuse pointcuts</strong>
+Define pointcuts in a centralized class (<code>PointcutLibrary</code>). Reuse with fully-qualified references. This prevents duplicated pointcut strings and makes global changes easy.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Always return proceed() result in @Around</strong>
+Never discard the return value. Even if you don't care about it, the caller does. Returning null silently breaks all callers of that method.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Always rethrow in @Around unless intentionally handling</strong>
+Swallowing exceptions silently is worse than crashing. If you catch and don't rethrow, document clearly why. Usually, log + rethrow is the right pattern.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Use @Order to make aspect ordering explicit</strong>
+Don't rely on undefined ordering between aspects. Assign explicit <code>@Order</code> values. Security aspects should run first (order=1), then audit, then logging.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Use custom annotations for opt-in AOP</strong>
+Prefer <code>@annotation()</code> pointcuts for explicit opt-in behavior (e.g., <code>@LogExecutionTime</code>) over broad package-matching for anything beyond universal infrastructure concerns. This makes the behavior visible in the code.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Be careful with expensive operations in advice</strong>
+Advice runs synchronously in the method's call chain. If your advice does a database call or HTTP request, it adds latency to every intercepted method. Use async queues for non-critical operations.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Don't put business logic in aspects</strong>
+Aspects are for infrastructure concerns. Business rules belong in services. If you find yourself putting complex conditional business logic in an aspect, it's a design smell.</div></div>
+
+<div class="bp"><div class="bp-icon">✅</div><div class="bp-text"><strong>Test your aspects</strong>
+Write integration tests that verify advice fires correctly. Test: (1) advice fires for matched methods, (2) advice doesn't fire for non-matched methods, (3) exception propagation works correctly, (4) return values are not modified unexpectedly.</div></div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 28 ═══ -->
+<section class="toc-section" id="s28">
+<h2 class="section-title"><span class="num">§ 28</span>Learning Roadmap</h2>
+
+<h3 class="sub-title">Beginner Roadmap</h3>
+<div class="roadmap">
+  <div class="roadmap-step"><h4>Understand the problem</h4><p>Study cross-cutting concerns. Look at real code with duplicated logging. Feel the pain AOP solves.</p></div>
+  <div class="roadmap-step"><h4>Learn the 7 core concepts</h4><p>Aspect, Advice, JoinPoint, Pointcut, Weaving, Target, Proxy. Don't skip any. Know each deeply.</p></div>
+  <div class="roadmap-step"><h4>Set up first AOP project</h4><p>Add spring-boot-starter-aop. Create a simple LoggingAspect with @Before and @AfterReturning. Watch it fire.</p></div>
+  <div class="roadmap-step"><h4>Master all 5 advice types</h4><p>Write at least one example of each. Understand which situations call for which advice type.</p></div>
+  <div class="roadmap-step"><h4>Learn basic pointcut expressions</h4><p>Master execution() with wildcards. Understand * vs .. vs +. Write expressions and test them.</p></div>
+</div>
+
+<h3 class="sub-title">Intermediate Roadmap</h3>
+<div class="roadmap">
+  <div class="roadmap-step"><h4>Master @Around advice</h4><p>Build performance monitoring, retry logic, and caching with @Around. Understand ProceedingJoinPoint thoroughly.</p></div>
+  <div class="roadmap-step"><h4>Create custom annotations</h4><p>Build @LogExecutionTime, @AdminOnly, @RateLimit. This is the most practical skill pattern.</p></div>
+  <div class="roadmap-step"><h4>Understand proxy internals</h4><p>Know JDK vs CGLIB differences. Debug self-invocation issues. Understand why private/final methods don't work.</p></div>
+  <div class="roadmap-step"><h4>Study Spring's own AOP usage</h4><p>Read how @Transactional, @Cacheable, @Async, and @PreAuthorize work. Understanding built-in AOP deepens mastery.</p></div>
+  <div class="roadmap-step"><h4>Build a complete logging framework</h4><p>Build the Smart Logging System from this guide. Add metrics, alerting, and structured logging.</p></div>
+</div>
+
+<h3 class="sub-title">Advanced Roadmap</h3>
+<div class="roadmap">
+  <div class="roadmap-step"><h4>Master aspect ordering and composition</h4><p>Build multiple aspects. Use @Order. Understand the "Russian doll" model. Test ordering edge cases.</p></div>
+  <div class="roadmap-step"><h4>Study AspectJ</h4><p>Set up compile-time weaving. Understand the difference from Spring AOP. Know when AspectJ is necessary.</p></div>
+  <div class="roadmap-step"><h4>Contribute to production AOP code</h4><p>Implement distributed tracing, idempotency, multi-tenant context propagation using AOP in a real project.</p></div>
+  <div class="roadmap-step"><h4>Performance profiling</h4><p>Benchmark your aspects. Measure proxy overhead. Optimize broad aspects. Use Async advice where safe.</p></div>
+  <div class="roadmap-step"><h4>Interview mastery</h4><p>Answer all 30 interview questions in this guide without notes. Explain the proxy internals on a whiteboard.</p></div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 29 ═══ -->
+<section class="toc-section" id="s29">
+<h2 class="section-title"><span class="num">§ 29</span>Cheat Sheet</h2>
+
+<h3 class="sub-title">Core Annotations</h3>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
+  <span class="tag">@Aspect</span>
+  <span class="tag">@Component</span>
+  <span class="tag">@Before</span>
+  <span class="tag">@After</span>
+  <span class="tag">@AfterReturning</span>
+  <span class="tag">@AfterThrowing</span>
+  <span class="tag">@Around</span>
+  <span class="tag">@Pointcut</span>
+  <span class="tag">@Order</span>
+  <span class="tag green">@EnableAspectJAutoProxy</span>
+</div>
+
+<h3 class="sub-title">Pointcut Quick Reference</h3>
+<div class="cheat-grid">
+  <div class="cheat-item">
+    <div class="ci-label">All public methods in service</div>
+    <div class="ci-code">execution(public *<br>com.example.service.*.*(..))</div>
+  </div>
+  <div class="cheat-item">
+    <div class="ci-label">All methods in package + subpackages</div>
+    <div class="ci-code">execution(*<br>com.example.service..*.*(..))</div>
+  </div>
+  <div class="cheat-item">
+    <div class="ci-label">Methods starting with "get"</div>
+    <div class="ci-code">execution(* com.example..get*(..))</div>
+  </div>
+  <div class="cheat-item">
+    <div class="ci-label">Methods with @annotation</div>
+    <div class="ci-code">@annotation(com.example<br>.annotation.MyAnnotation)</div>
+  </div>
+  <div class="cheat-item">
+    <div class="ci-label">All in @Service classes</div>
+    <div class="ci-code">within(@org.springframework<br>.stereotype.Service *)</div>
+  </div>
+  <div class="cheat-item">
+    <div class="ci-label">Bean name pattern</div>
+    <div class="ci-code">bean(*Service)</div>
+  </div>
+  <div class="cheat-item">
+    <div class="ci-label">Methods with Long first arg</div>
+    <div class="ci-code">args(Long, ..)</div>
+  </div>
+  <div class="cheat-item">
+    <div class="ci-label">Combine expressions</div>
+    <div class="ci-code">execution(*..service.*.*(..))
+&amp;&amp; !@annotation(NoLog)</div>
+  </div>
+</div>
+
+<h3 class="sub-title">Advice Type Quick Reference</h3>
+<table>
+  <thead><tr><th>Type</th><th>When</th><th>Return Value?</th><th>Exception?</th><th>Can Stop?</th></tr></thead>
+  <tbody>
+    <tr><td><code>@Before</code></td><td>Before method</td><td>No</td><td>Can throw</td><td>Only by exception</td></tr>
+    <tr><td><code>@After</code></td><td>Always (finally)</td><td>No</td><td>No</td><td>No</td></tr>
+    <tr><td><code>@AfterReturning</code></td><td>On success only</td><td>Read only</td><td>No</td><td>No</td></tr>
+    <tr><td><code>@AfterThrowing</code></td><td>On exception only</td><td>No</td><td>Read only</td><td>No</td></tr>
+    <tr><td><code>@Around</code></td><td>Full control</td><td>Full control</td><td>Full control</td><td>Yes (skip proceed)</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub-title">JoinPoint Methods Quick Reference</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>JoinPoint API Quick Reference</div>
+  <pre><code class="language-java">jp.getSignature().getName()              // "createUser"
+jp.getSignature().toShortString()        // "UserService.createUser(..)"
+jp.getSignature().toLongString()         // full qualified signature
+jp.getArgs()                             // Object[] of arguments
+jp.getTarget()                           // real object (UserService)
+jp.getThis()                             // proxy object
+jp.getKind()                             // "method-execution"
+((MethodSignature)jp.getSignature()).getMethod()        // java.lang.reflect.Method
+((MethodSignature)jp.getSignature()).getParameterNames() // String[] param names
+((MethodSignature)jp.getSignature()).getReturnType()    // return type class</code></pre>
+</div>
+
+<h3 class="sub-title">Around Template</h3>
+<div class="code-block">
+  <div class="code-label"><span class="dot"></span>@Around Boilerplate Template</div>
+  <pre><code class="language-java">@Around("yourPointcut()")
+public Object aroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
+    // BEFORE
+    long start = System.currentTimeMillis();
+    
+    try {
+        Object result = pjp.proceed(); // Call the actual method
+        // AFTER RETURNING
+        return result; // Always return!
+    } catch (Exception ex) {
+        // ON EXCEPTION
+        throw ex; // Always rethrow (unless intentionally swallowing)!
+    } finally {
+        // ALWAYS
+        long elapsed = System.currentTimeMillis() - start;
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════ SECTION 30 ═══ -->
+<section class="toc-section" id="s30">
+<h2 class="section-title"><span class="num">§ 30</span>Final Summary</h2>
+
+<h3 class="sub-title">Key Takeaways</h3>
+
+<div class="bp"><div class="bp-icon">🎯</div><div class="bp-text"><strong>AOP = Modularizing what OOP can't</strong>
+AOP doesn't replace OOP — it complements it. OOP organizes objects and behavior. AOP organizes cross-cutting concerns that span multiple objects. Together, they produce clean, maintainable enterprise code.</div></div>
+
+<div class="bp"><div class="bp-icon">🔑</div><div class="bp-text"><strong>The proxy is the key mental model</strong>
+Everything in Spring AOP flows from the proxy concept. When you inject a bean, you get a proxy. When the proxy's method is called, advice fires. When advice calls proceed(), the real method runs. This chain explains all AOP behavior — including its limitations.</div></div>
+
+<div class="bp"><div class="bp-icon">⚡</div><div class="bp-text"><strong>You're already using AOP</strong>
+@Transactional, @Cacheable, @Async, @PreAuthorize — these are Spring AOP aspects. Understanding AOP means understanding how half of Spring's most important features work internally. This makes you a far more effective Spring developer.</div></div>
+
+<div class="bp"><div class="bp-icon">🛡️</div><div class="bp-text"><strong>Know the limitations</strong>
+Private methods, final methods, self-invocation — these are the three failure modes that catch every developer at least once. Know them before they hit you in production.</div></div>
+
+<div class="bp"><div class="bp-icon">🚀</div><div class="bp-text"><strong>Custom annotations = the killer pattern</strong>
+The most powerful real-world use of AOP is creating custom annotations (@LogExecutionTime, @AdminOnly, @RateLimit, @Idempotent) and backing them with aspects. This gives you Spring-native declarative programming for any concern.</div></div>
+
+<div class="bp"><div class="bp-icon">📐</div><div class="bp-text"><strong>Pointcuts are a skill</strong>
+Writing correct, narrow pointcut expressions separates beginners from experienced AOP users. Practice them. Know the difference between * and .., between execution() and within(), and how to combine them with && || !.</div></div>
+
+<h3 class="sub-title">Mental Models to Internalize</h3>
+<ol style="color:var(--text2);line-height:2">
+  <li><strong style="color:var(--text)">The Glass Pane Model</strong> — AOP is a transparent layer over your application. Business code stays clean underneath.</li>
+  <li><strong style="color:var(--text)">The Russian Doll Model</strong> — Multiple aspects nest around a method. Outer aspects see inner aspects' effects. Order matters.</li>
+  <li><strong style="color:var(--text)">The Proxy Interception Model</strong> — You never call the real object directly (after AOP is applied). You always call the proxy first.</li>
+  <li><strong style="color:var(--text)">The Declarative Model</strong> — AOP enables declarative programming. You declare what concerns apply to what methods. The framework handles the how.</li>
+</ol>
+
+<div class="callout success" style="margin-top:40px">
+  <div class="callout-title">🎓 You're Now AOP-Ready</div>
+  If you've worked through this guide, you can: (1) Build complete AOP logging and monitoring systems, (2) Create custom annotation-driven aspects, (3) Debug proxy and self-invocation issues, (4) Explain @Transactional internals in interviews, (5) Make architectural decisions about when AOP is and isn't appropriate, (6) Confidently answer senior-level Spring AOP interview questions. Go build something with it.
+</div>
+
+<div style="text-align:center;margin-top:60px;padding:40px;border-top:1px solid var(--border)">
+  <div style="font-family:var(--font-head);font-size:13px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Spring AOP Masterclass</div>
+  <div style="font-size:12px;color:var(--text3)">A complete backend engineering handbook · Beginner → Production</div>
+</div>
+</section>
+
+</div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+// Scrollspy
+const sections = document.querySelectorAll('.toc-section[id]');
+const links = document.querySelectorAll('#sidebar a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`#sidebar a[href="#${entry.target.id}"]`);
+      if (active) {
+        active.classList.add('active');
+        active.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// Close mobile sidebar on link click
+links.forEach(l => {
+  l.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
